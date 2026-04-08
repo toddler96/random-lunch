@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>랜덤 런치</title>
+<link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F2;
+    --surface: #FFFFFF;
+    --border: #E8E6DF;
+    --text-primary: #1A1916;
+    --text-secondary: #6B6860;
+    --text-hint: #A8A69F;
+    --accent: #4A3FD4;
+    --accent-light: #EEEDFE;
+    --accent-text: #3C3489;
+    --coral: #E85D3A;
+    --coral-light: #FAECE7;
+    --coral-text: #712B13;
+    --green: #1D9E75;
+    --green-light: #E1F5EE;
+    --green-text: #0F6E56;
+    --amber: #BA7517;
+    --amber-light: #FAEEDA;
+    --amber-text: #633806;
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Pretendard', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text-primary);
+    min-height: 100vh;
+    padding: 2rem 1rem 4rem;
+  }
+
+  .container { max-width: 680px; margin: 0 auto; }
+
+  /* 헤더 */
+  .app-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+    padding-top: 1rem;
+  }
+  .app-header .emoji { font-size: 40px; display: block; margin-bottom: 12px; }
+  .app-header h1 {
+    font-size: 28px; font-weight: 700; color: var(--text-primary);
+    letter-spacing: -0.5px;
+  }
+  .app-header p { font-size: 15px; color: var(--text-secondary); margin-top: 6px; }
+
+  /* 카드 */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1rem;
+    box-shadow: var(--shadow);
+  }
+  .card-label {
+    font-size: 12px; font-weight: 600; color: var(--text-hint);
+    letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 12px;
+  }
+
+  /* 멤버 입력 */
+  .input-row { display: flex; gap: 8px; }
+  input[type="text"], input[type="number"], select {
+    font-family: inherit;
+    font-size: 14px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 9px 12px;
+    color: var(--text-primary);
+    transition: border-color 0.15s, box-shadow 0.15s;
+    outline: none;
+  }
+  input[type="text"]:focus, input[type="number"]:focus, select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(74,63,212,0.1);
+  }
+  input[type="text"] { flex: 1; }
+  input[type="number"] { width: 80px; text-align: center; }
+  select { flex: 1; cursor: pointer; }
+
+  .add-btn {
+    font-family: inherit; font-size: 14px; font-weight: 600;
+    background: var(--accent); color: #fff;
+    border: none; border-radius: var(--radius-sm);
+    padding: 9px 18px; cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+    white-space: nowrap;
+  }
+  .add-btn:hover { background: #3C3489; }
+  .add-btn:active { transform: scale(0.97); }
+
+  /* 멤버 태그 */
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; min-height: 10px; }
+  .tag {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: var(--accent-light); color: var(--accent-text);
+    font-size: 13px; font-weight: 500;
+    padding: 4px 10px 4px 12px; border-radius: 99px;
+    animation: tagIn 0.15s ease;
+  }
+  @keyframes tagIn { from { opacity: 0; transform: scale(0.85); } to { opacity: 1; transform: scale(1); } }
+  .tag-remove {
+    background: none; border: none; cursor: pointer;
+    color: var(--accent); font-size: 15px; line-height: 1;
+    padding: 0; margin-left: 2px; opacity: 0.6;
+    transition: opacity 0.1s;
+  }
+  .tag-remove:hover { opacity: 1; }
+
+  /* 설정 행 */
+  .settings-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .setting-group { display: flex; flex-direction: column; gap: 8px; }
+  .setting-group label { font-size: 13px; font-weight: 500; color: var(--text-secondary); }
+
+  /* 제외 태그 */
+  .ex-tag {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: var(--coral-light); color: var(--coral-text);
+    font-size: 12px; padding: 3px 10px; border-radius: 99px;
+    cursor: pointer; transition: background 0.1s;
+    animation: tagIn 0.15s ease;
+  }
+  .ex-tag:hover { background: #F5C4B3; }
+
+  /* 실행 버튼 */
+  .run-btn {
+    width: 100%; padding: 14px;
+    font-family: inherit; font-size: 16px; font-weight: 700;
+    background: var(--accent); color: #fff;
+    border: none; border-radius: var(--radius-md);
+    cursor: pointer; margin-top: 0.5rem;
+    transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
+    box-shadow: 0 4px 14px rgba(74,63,212,0.3);
+    letter-spacing: -0.2px;
+  }
+  .run-btn:hover { background: #3C3489; box-shadow: 0 6px 20px rgba(74,63,212,0.35); }
+  .run-btn:active { transform: scale(0.99); }
+  .run-btn:disabled {
+    background: var(--border); color: var(--text-hint);
+    box-shadow: none; cursor: not-allowed;
+  }
+
+  /* 결과 섹션 */
+  .results { margin-top: 2rem; }
+  .results-top {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+  .results-top h2 { font-size: 18px; font-weight: 700; }
+  .reshuffle-btn {
+    font-family: inherit; font-size: 13px; font-weight: 600;
+    background: var(--surface); color: var(--accent);
+    border: 1px solid var(--accent-light); border-radius: var(--radius-sm);
+    padding: 7px 14px; cursor: pointer;
+    transition: background 0.1s, border-color 0.1s;
+  }
+  .reshuffle-btn:hover { background: var(--accent-light); border-color: var(--accent); }
+
+  /* 통계 */
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 1.25rem; }
+  .stat-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius-md); padding: 14px 16px;
+    box-shadow: var(--shadow);
+  }
+  .stat-num { font-size: 24px; font-weight: 700; color: var(--text-primary); }
+  .stat-lbl { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+
+  /* 그룹 그리드 */
+  .groups-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
+  .group-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 1.1rem 1.1rem 1rem;
+    box-shadow: var(--shadow);
+    animation: cardIn 0.2s ease both;
+  }
+  .group-card:nth-child(1) { animation-delay: 0s; }
+  .group-card:nth-child(2) { animation-delay: 0.05s; }
+  .group-card:nth-child(3) { animation-delay: 0.1s; }
+  .group-card:nth-child(4) { animation-delay: 0.15s; }
+  .group-card:nth-child(n+5) { animation-delay: 0.2s; }
+
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .group-badge {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.06em;
+    background: var(--accent-light); color: var(--accent-text);
+    display: inline-block; padding: 3px 10px; border-radius: 99px;
+    margin-bottom: 12px;
+  }
+  .group-member {
+    display: flex; align-items: center; gap: 10px;
+    padding: 5px 0;
+    border-bottom: 1px solid var(--bg);
+  }
+  .group-member:last-child { border-bottom: none; }
+  .avatar {
+    width: 30px; height: 30px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; flex-shrink: 0;
+  }
+  .member-name { font-size: 14px; font-weight: 500; }
+
+  /* 제외 멤버 표시 */
+  .exclude-info {
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    font-size: 12px; color: var(--text-hint); margin-bottom: 1rem;
+  }
+
+  /* 빈 상태 */
+  .empty { text-align: center; padding: 3rem 1rem; color: var(--text-hint); }
+  .empty .empty-icon { font-size: 36px; margin-bottom: 12px; }
+  .empty p { font-size: 14px; }
+
+  /* 반응형 */
+  @media (max-width: 480px) {
+    .settings-row { grid-template-columns: 1fr; }
+    .stats { grid-template-columns: repeat(3, 1fr); }
+    .groups-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="app-header">
+    <span class="emoji">🍽️</span>
+    <h1>랜덤 런치</h1>
+    <p>팀원을 추가하고 랜덤 런치 그룹을 만들어보세요</p>
+  </div>
+
+  <!-- 멤버 추가 -->
+  <div class="card">
+    <div class="card-label">멤버 추가</div>
+    <div class="input-row">
+      <input type="text" id="nameInput" placeholder="이름 입력 후 Enter 또는 추가 클릭" />
+      <button class="add-btn" onclick="addMember()">추가</button>
+    </div>
+    <div class="tags" id="memberTags"></div>
+  </div>
+
+  <!-- 설정 -->
+  <div class="card">
+    <div class="card-label">그룹 설정</div>
+    <div class="settings-row">
+      <div class="setting-group">
+        <label>그룹당 인원 수</label>
+        <input type="number" id="groupSize" value="3" min="2" max="20" />
+      </div>
+      <div class="setting-group">
+        <label>제외할 멤버</label>
+        <select id="excludeSelect" onchange="addExclude()">
+          <option value="">멤버 선택...</option>
+        </select>
+        <div class="tags" id="excludeTags"></div>
+      </div>
+    </div>
+  </div>
+
+  <button class="run-btn" id="runBtn" onclick="generateGroups()" disabled>
+    그룹 생성하기
+  </button>
+
+  <div id="results"></div>
+</div>
+
+<script>
+let members = [];
+let excluded = [];
+let lastGroupSize = 3;
+
+const avatarPalette = [
+  ['#EEEDFE','#3C3489'], ['#E1F5EE','#0F6E56'],
+  ['#FAECE7','#712B13'], ['#EAF3DB','#27500A'],
+  ['#FAEEDA','#633806'], ['#E6F1FB','#0C447C'],
+  ['#FBEAF0','#72243E'], ['#F1EFE8','#444441'],
+];
+
+function getInitials(name) {
+  return name.trim().split(/\s+/).map(w => w[0]).join('').toUpperCase().slice(0, 2);
+}
+
+function getAvatarColor(name) {
+  let h = 0;
+  for (let c of name) h = (h * 31 + c.charCodeAt(0)) % avatarPalette.length;
+  return avatarPalette[h];
+}
+
+function renderMembers() {
+  const el = document.getElementById('memberTags');
+  el.innerHTML = members.map((m, i) =>
+    `<span class="tag">${m}<button class="tag-remove" onclick="removeMember(${i})">×</button></span>`
+  ).join('');
+  refreshExcludeSelect();
+  refreshRunBtn();
+}
+
+function refreshExcludeSelect() {
+  const sel = document.getElementById('excludeSelect');
+  const available = members.filter(m => !excluded.includes(m));
+  sel.innerHTML = '<option value="">멤버 선택...</option>' +
+    available.map(m => `<option value="${m}">${m}</option>`).join('');
+}
+
+function renderExcluded() {
+  document.getElementById('excludeTags').innerHTML =
+    excluded.map(m =>
+      `<span class="ex-tag" onclick="removeExclude('${m}')" title="클릭하여 복구">${m} ×</span>`
+    ).join('');
+  refreshExcludeSelect();
+  refreshRunBtn();
+}
+
+function refreshRunBtn() {
+  const active = members.filter(m => !excluded.includes(m));
+  document.getElementById('runBtn').disabled = active.length < 2;
+}
+
+function addMember() {
+  const input = document.getElementById('nameInput');
+  const name = input.value.trim();
+  if (!name) return input.focus();
+  if (members.includes(name)) {
+    input.select();
+    return;
+  }
+  members.push(name);
+  input.value = '';
+  input.focus();
+  renderMembers();
+}
+
+function removeMember(i) {
+  const name = members[i];
+  members.splice(i, 1);
+  excluded = excluded.filter(e => e !== name);
+  renderMembers();
+  renderExcluded();
+}
+
+function addExclude() {
+  const sel = document.getElementById('excludeSelect');
+  const val = sel.value;
+  if (!val || excluded.includes(val)) return;
+  excluded.push(val);
+  sel.value = '';
+  renderExcluded();
+}
+
+function removeExclude(name) {
+  excluded = excluded.filter(e => e !== name);
+  renderExcluded();
+}
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function divideGroups(arr, size) {
+  const total = arr.length;
+  const numGroups = Math.ceil(total / size);
+  const base = Math.floor(total / numGroups);
+  let rem = total % numGroups;
+  const groups = [];
+  let idx = 0;
+  for (let i = 0; i < numGroups; i++) {
+    const s = base + (rem-- > 0 ? 1 : 0);
+    groups.push(arr.slice(idx, idx + s));
+    idx += s;
+  }
+  return groups;
+}
+
+function generateGroups() {
+  lastGroupSize = parseInt(document.getElementById('groupSize').value) || 3;
+  const active = members.filter(m => !excluded.includes(m));
+  if (active.length < 2) return;
+  const groups = divideGroups(shuffle(active), lastGroupSize);
+  renderResults(groups);
+}
+
+function renderResults(groups) {
+  const total = groups.flat().length;
+  const exPart = excluded.length
+    ? excluded.map(e => `<span style="background:var(--coral-light);color:var(--coral-text);font-size:11px;padding:2px 8px;border-radius:99px;">${e}</span>`).join('')
+    : `<span>없음</span>`;
+
+  const groupCards = groups.map((g, gi) => {
+    const memberRows = g.map(m => {
+      const [bg, fg] = getAvatarColor(m);
+      return `<div class="group-member">
+        <div class="avatar" style="background:${bg};color:${fg}">${getInitials(m)}</div>
+        <span class="member-name">${m}</span>
+      </div>`;
+    }).join('');
+    return `<div class="group-card">
+      <div class="group-badge">그룹 ${gi + 1}</div>
+      ${memberRows}
+    </div>`;
+  }).join('');
+
+  document.getElementById('results').innerHTML = `
+    <div class="results">
+      <div class="results-top">
+        <h2>결과</h2>
+        <button class="reshuffle-btn" onclick="generateGroups()">🔀 다시 섞기</button>
+      </div>
+      <div class="stats">
+        <div class="stat-card"><div class="stat-num">${total}</div><div class="stat-lbl">참여 인원</div></div>
+        <div class="stat-card"><div class="stat-num">${groups.length}</div><div class="stat-lbl">그룹 수</div></div>
+        <div class="stat-card"><div class="stat-num">${lastGroupSize}</div><div class="stat-lbl">그룹당 인원</div></div>
+      </div>
+      <div class="exclude-info">제외 멤버: ${exPart}</div>
+      <div class="groups-grid">${groupCards}</div>
+    </div>`;
+}
+
+document.getElementById('nameInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') addMember();
+});
+</script>
+</body>
+</html>
