@@ -36,18 +36,20 @@ input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(75,63,212,.1)}
 .bp{background:var(--accent);color:#fff;box-shadow:0 4px 12px rgba(75,63,212,.25)}
 .bp:hover{background:var(--accent3)}
 .bp:active{transform:scale(.98)}
+.bp:disabled{background:var(--border);color:var(--t3);box-shadow:none;cursor:not-allowed}
 .bo{background:var(--surface);color:var(--accent);border:1.5px solid var(--accent2)}
 .bo:hover{background:var(--accent2)}
 .bg{background:transparent;color:var(--t2);border:1.5px solid var(--border)}
 .bg:hover{background:var(--bg)}
 .bfull{width:100%}
 .bsm{font-size:12px;padding:7px 14px}
-.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;min-height:10px}
 .chip{display:inline-flex;align-items:center;gap:5px;background:var(--bg);border:1.5px solid var(--border);border-radius:99px;padding:6px 12px;font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;user-select:none}
 .chip:hover{border-color:var(--coral);background:var(--coral2);color:var(--coral)}
-.jname-tag{display:inline-flex;align-items:center;gap:6px;background:var(--green2);border:1.5px solid var(--green);border-radius:99px;padding:6px 12px;font-size:13px;font-weight:500;color:var(--green)}
-.jname-tag button{background:none;border:none;cursor:pointer;color:var(--green);font-size:14px;line-height:1;padding:0;opacity:.7}
-.jname-tag button:hover{opacity:1}
+.jtag{display:inline-flex;align-items:center;gap:6px;background:var(--green2);border:1.5px solid var(--green);border-radius:99px;padding:6px 12px;font-size:13px;font-weight:500;color:var(--green);animation:tagIn .2s ease}
+@keyframes tagIn{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:scale(1)}}
+.jtag button{background:none;border:none;cursor:pointer;color:var(--green);font-size:14px;line-height:1;padding:0;opacity:.6}
+.jtag button:hover{opacity:1}
 .ggrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px}
 .gc{background:var(--surface);border-radius:var(--rmd);box-shadow:var(--sh);padding:1rem 1.1rem;animation:fu .25s ease both}
 @keyframes fu{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
@@ -81,6 +83,17 @@ input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(75,63,212,.1)}
 .aemoji{font-size:36px;margin-bottom:8px}
 .atitle{font-size:20px;font-weight:700;margin-bottom:4px}
 .asub{font-size:13px;opacity:.75}
+
+/* 실시간 표시 */
+.live-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--green);margin-right:5px;animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.live-badge{display:inline-flex;align-items:center;font-size:12px;font-weight:700;color:var(--green);background:var(--green2);padding:3px 10px;border-radius:99px}
+
+/* Firebase 설정 카드 */
+.fb-setup{background:#FFF8E7;border:1.5px solid #F5C842;border-radius:var(--rlg);padding:1.4rem 1.5rem;margin-bottom:1rem}
+.fb-setup .clabel{color:#B87214}
+.fb-input{font-family:monospace;font-size:13px}
+
 @media(max-width:480px){.ggrid{grid-template-columns:1fr 1fr}}
 </style>
 </head>
@@ -93,8 +106,43 @@ input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(75,63,212,.1)}
   <div style="font-size:26px;font-weight:700;margin-bottom:8px;line-height:1.3">팀 랜덤 런치</div>
   <div style="font-size:14px;color:var(--t2);margin-bottom:2rem;line-height:1.7">날짜를 정하고 참여자를 모집한 뒤<br>자동으로 랜덤 그룹을 만들어드려요.</div>
   <div style="max-width:280px;margin:0 auto">
-    <button class="btn bp bfull" style="font-size:15px;padding:14px" onclick="goAdmin()">관리자로 시작하기 →</button>
+    <button class="btn bp bfull" style="font-size:15px;padding:14px" onclick="location.hash='setup'">시작하기 →</button>
   </div>
+</div>
+</div>
+
+<!-- FIREBASE SETUP -->
+<div id="pg-setup" class="page">
+<div class="wrap">
+  <div class="topbar"><div class="logo">🍽️ 랜덤 <span>런치</span></div></div>
+  <div style="font-size:18px;font-weight:700;margin-bottom:6px">Firebase 연결 설정</div>
+  <div style="font-size:13px;color:var(--t2);margin-bottom:1.5rem;line-height:1.7">실시간 참여 현황을 위해 Firebase를 연결합니다.<br>아래 가이드를 따라 설정값을 입력해 주세요.</div>
+
+  <div class="fb-setup">
+    <div class="clabel">Firebase 설정값 입력</div>
+    <div style="display:grid;gap:10px">
+      <div>
+        <div style="font-size:12px;color:var(--t2);margin-bottom:5px">Database URL <span style="color:var(--coral)">*</span></div>
+        <input type="text" id="fb-url" class="fb-input" placeholder="https://프로젝트명-default-rtdb.firebaseio.com">
+      </div>
+      <div>
+        <div style="font-size:12px;color:var(--t2);margin-bottom:5px">API Key <span style="color:var(--coral)">*</span></div>
+        <input type="text" id="fb-apikey" class="fb-input" placeholder="AIzaSy...">
+      </div>
+    </div>
+  </div>
+
+  <details style="margin-bottom:1rem">
+    <summary style="font-size:13px;font-weight:700;color:var(--accent);cursor:pointer;padding:10px 0">📖 Firebase 설정 방법 보기</summary>
+    <div class="card" style="margin-top:10px;font-size:13px;color:var(--t2);line-height:1.8">
+      <b style="color:var(--t1)">1단계.</b> <a href="https://console.firebase.google.com" target="_blank" style="color:var(--accent)">console.firebase.google.com</a> 접속 → 프로젝트 만들기<br>
+      <b style="color:var(--t1)">2단계.</b> 좌측 메뉴 → Realtime Database → 데이터베이스 만들기 → <b>테스트 모드</b> 선택<br>
+      <b style="color:var(--t1)">3단계.</b> 프로젝트 설정(⚙️) → 일반 탭 → 하단 "내 앱" → 웹 앱 추가(&lt;/&gt;)<br>
+      <b style="color:var(--t1)">4단계.</b> firebaseConfig 에서 <b>databaseURL</b>과 <b>apiKey</b> 복사해서 위에 입력
+    </div>
+  </details>
+
+  <button class="btn bp bfull" onclick="saveFirebaseConfig()">저장하고 시작하기 →</button>
 </div>
 </div>
 
@@ -104,7 +152,7 @@ input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(75,63,212,.1)}
   <div class="topbar"><div class="logo">🍽️ 랜덤 <span>런치</span></div><div class="badge">관리자</div></div>
   <div class="tabs">
     <div class="tab on" id="tab0" onclick="aTab(0)">① 이벤트 설정</div>
-    <div class="tab" id="tab1" onclick="aTab(1)">② 참여 현황</div>
+    <div class="tab" id="tab1" onclick="aTab(1)">② 실시간 현황</div>
     <div class="tab" id="tab2" onclick="aTab(2)">③ 그룹 생성</div>
   </div>
 
@@ -119,7 +167,7 @@ input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(75,63,212,.1)}
     </div>
     <div class="card" style="background:var(--accent2);border:1.5px solid #c8c4f8">
       <div style="font-size:13px;color:var(--accent3);line-height:1.6">
-        💡 팀원들이 링크를 받아 <strong>직접 이름을 입력해서 참여 신청</strong>합니다.<br>멤버 목록을 미리 등록할 필요가 없어요.
+        💡 팀원들이 링크를 받아 <b>직접 이름을 입력해서 참여 신청</b>합니다.<br>참여 현황은 <b>실시간으로 자동 업데이트</b>됩니다.
       </div>
     </div>
     <button class="btn bp bfull" onclick="createEv()">참여 신청 링크 생성 →</button>
@@ -127,19 +175,19 @@ input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(75,63,212,.1)}
       <div class="card">
         <div class="clabel">참여 신청 링크</div>
         <div class="lbox"><span class="lurl" id="jlink-text"></span><button class="cbtn" onclick="cpLink('jlink-text',this)">복사</button></div>
-        <div style="font-size:12px;color:var(--t2);margin-top:8px">이 링크를 Teams 채널에 공유하세요. 팀원들이 이름을 클릭해 참여 신청합니다.</div>
+        <div style="font-size:12px;color:var(--t2);margin-top:8px">이 링크를 Teams 채널에 공유하세요.</div>
       </div>
-      <button class="btn bo bfull" onclick="aTab(1)">참여 현황 보기 →</button>
+      <button class="btn bo bfull" onclick="aTab(1)">실시간 현황 보기 →</button>
     </div>
   </div>
 
   <div id="as1" style="display:none">
     <div class="card">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
         <div class="clabel" style="margin:0">참여 현황</div>
-        <button class="btn bg bsm" onclick="refreshJ()">새로고침</button>
+        <span class="live-badge"><span class="live-dot"></span>실시간</span>
       </div>
-      <div id="jlist" class="chips"></div>
+      <div id="jlist" class="chips"><span style="font-size:13px;color:var(--t3)">대기 중...</span></div>
       <div id="jcount-admin" style="font-size:13px;color:var(--t2);margin-top:12px"></div>
     </div>
     <button class="btn bp bfull" onclick="aTab(2)">그룹 생성하기 →</button>
@@ -169,12 +217,12 @@ input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(75,63,212,.1)}
     <div style="font-size:13px;color:var(--t2);margin-bottom:14px">이름을 입력하고 신청 버튼을 눌러주세요 ✋</div>
     <div class="irow" style="margin-bottom:14px">
       <input type="text" id="j-name-input" placeholder="본인 이름 입력" maxlength="20">
-      <button class="btn bp bsm" onclick="joinSubmit()">참여 신청</button>
+      <button class="btn bp bsm" id="j-submit-btn" onclick="joinSubmit()">참여 신청</button>
     </div>
-    <div id="j-chips" class="chips"></div>
+    <div id="j-chips" class="chips"><span style="font-size:13px;color:var(--t3)">아직 신청자가 없습니다</span></div>
   </div>
   <div id="j-count" style="font-size:13px;color:var(--t2);text-align:center;padding:.5rem 0 1rem"></div>
-  <button class="btn bg bfull" onclick="copyJoinLink()">🔗 이 링크 복사해서 동료에게 공유</button>
+  <button class="btn bg bfull" onclick="cpJoinLink()">🔗 이 링크 복사해서 동료에게 공유</button>
 </div>
 </div>
 
@@ -193,47 +241,111 @@ input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(75,63,212,.1)}
 
 <div class="toast" id="toast"></div>
 
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
 <script>
-// ── 색상 팔레트 ──
+// ══════════════════════════════
+// 색상 팔레트
+// ══════════════════════════════
 const AVT=[['#EEEDFE','#3C3489'],['#E1F5EE','#0F6E56'],['#FAECE7','#712B13'],['#EAF3DB','#27500A'],['#FAEEDA','#633806'],['#E6F1FB','#0C447C'],['#FBEAF0','#72243E'],['#F1EFE8','#444441']];
-function gc(n){let h=0;for(let c of n)h=(h*31+c.charCodeAt(0))%AVT.length;return AVT[h];}
+function getColor(n){let h=0;for(let c of n)h=(h*31+c.charCodeAt(0))%AVT.length;return AVT[h];}
 function ini(n){return n.trim().split(/\s+/).map(w=>w[0]).join('').toUpperCase().slice(0,2);}
 
-// ── 전역 상태 ──
-let eventId=null;
+// ══════════════════════════════
+// Firebase
+// ══════════════════════════════
+let db = null;
+let currentListener = null;
 
-// ── 페이지 라우팅 ──
-function route(){
-  const raw=location.hash.slice(1);
-  const qIdx=raw.indexOf('?');
-  const view=qIdx===-1?raw:raw.slice(0,qIdx);
-  const qs=qIdx===-1?'':raw.slice(qIdx+1);
-  const params=new URLSearchParams(qs);
-  ['home','admin','join','result'].forEach(p=>document.getElementById('pg-'+p).classList.remove('active'));
-  if(!view||view==='home'){show('home');}
-  else if(view==='admin'){show('admin');initAdmin();}
-  else if(view==='join'){show('join');initJoin(params);}
-  else if(view==='result'){show('result');initResult(params);}
-  else{show('home');}
+function initFirebase(){
+  const cfg = loadConfig();
+  if(!cfg) return false;
+  try {
+    if(!firebase.apps.length){
+      firebase.initializeApp({ apiKey: cfg.apiKey, databaseURL: cfg.dbUrl });
+    }
+    db = firebase.database();
+    return true;
+  } catch(e) {
+    console.error('Firebase 초기화 실패:', e);
+    return false;
+  }
 }
-function show(p){document.getElementById('pg-'+p).classList.add('active');}
-function goAdmin(){location.hash='admin';}
 
-window.addEventListener('hashchange',route);
-window.addEventListener('DOMContentLoaded',()=>{
-  document.getElementById('ev-date').value=new Date().toISOString().slice(0,10);
+function loadConfig(){
+  try { return JSON.parse(localStorage.getItem('rl_fb_cfg')); } catch { return null; }
+}
+function saveConfig(cfg){ localStorage.setItem('rl_fb_cfg', JSON.stringify(cfg)); }
+
+function saveFirebaseConfig(){
+  const dbUrl = document.getElementById('fb-url').value.trim();
+  const apiKey = document.getElementById('fb-apikey').value.trim();
+  if(!dbUrl || !apiKey){ toast('Database URL과 API Key를 모두 입력해 주세요'); return; }
+  saveConfig({ dbUrl, apiKey });
+  if(initFirebase()){
+    toast('연결 성공! 🎉');
+    setTimeout(()=>{ location.hash='admin'; }, 800);
+  } else {
+    toast('연결 실패. 입력값을 확인해 주세요.');
+  }
+}
+
+// ══════════════════════════════
+// 라우팅
+// ══════════════════════════════
+function route(){
+  const raw = location.hash.slice(1);
+  const qi = raw.indexOf('?');
+  const view = qi===-1 ? raw : raw.slice(0,qi);
+  const params = new URLSearchParams(qi===-1 ? '' : raw.slice(qi+1));
+
+  ['home','setup','admin','join','result'].forEach(p=>
+    document.getElementById('pg-'+p).classList.remove('active'));
+
+  // Firebase 미설정 시 setup으로
+  if(!view || view==='home'){
+    show('home');
+  } else if(view==='setup'){
+    show('setup');
+  } else if(view==='admin'){
+    if(!initFirebase()){ show('setup'); return; }
+    show('admin'); initAdmin();
+  } else if(view==='join'){
+    show('join'); initJoin(params);
+  } else if(view==='result'){
+    show('result'); initResult(params);
+  } else {
+    show('home');
+  }
+}
+
+function show(p){ document.getElementById('pg-'+p).classList.add('active'); }
+
+window.addEventListener('hashchange', route);
+window.addEventListener('DOMContentLoaded', ()=>{
+  document.getElementById('ev-date').value = new Date().toISOString().slice(0,10);
+  document.getElementById('j-name-input').addEventListener('keydown', e=>{ if(e.key==='Enter') joinSubmit(); });
+  // 저장된 설정값 자동 채우기
+  const cfg = loadConfig();
+  if(cfg){
+    document.getElementById('fb-url').value = cfg.dbUrl || '';
+    document.getElementById('fb-apikey').value = cfg.apiKey || '';
+  }
   route();
 });
 
-// ── 데이터 직렬화 ──
-function encode(obj){return btoa(unescape(encodeURIComponent(JSON.stringify(obj))));}
-function decode(str){try{return JSON.parse(decodeURIComponent(escape(atob(str))));}catch{return null;}}
-function genId(){return Math.random().toString(36).slice(2,7).toUpperCase();}
-function base(){return location.href.split('#')[0];}
+function base(){ return location.href.split('#')[0]; }
+function genId(){ return Date.now().toString(36).toUpperCase() + Math.random().toString(36).slice(2,5).toUpperCase(); }
+function encode(obj){ return btoa(unescape(encodeURIComponent(JSON.stringify(obj)))); }
+function decode(str){ try{ return JSON.parse(decodeURIComponent(escape(atob(str)))); }catch{ return null; } }
 
-// ════════════════════════════
-// 관리자 페이지
-// ════════════════════════════
+// ══════════════════════════════
+// 관리자
+// ══════════════════════════════
+let currentEvId = null;
+
 function initAdmin(){
   document.getElementById('jlink-area').style.display='none';
   document.getElementById('rlink-area').style.display='none';
@@ -242,183 +354,233 @@ function initAdmin(){
 
 function aTab(i){
   [0,1,2].forEach(k=>{
-    document.getElementById('as'+k).style.display=k===i?'block':'none';
-    document.getElementById('tab'+k).classList.toggle('on',k===i);
+    document.getElementById('as'+k).style.display = k===i ? 'block':'none';
+    document.getElementById('tab'+k).classList.toggle('on', k===i);
   });
-  if(i===1)refreshJ();
-  if(i===2)renderAdminGroups();
+  if(i===1 && currentEvId) startListening(currentEvId);
+  if(i===2) renderAdminGroups();
 }
 
 function createEv(){
-  const date=document.getElementById('ev-date').value;
-  const titleEl=document.getElementById('ev-title').value.trim();
-  const title=titleEl||(date?date.replace(/-/g,'/')+' 랜덤 런치':'랜덤 런치');
-  const size=parseInt(document.getElementById('ev-size').value)||3;
-  eventId=genId();
-  const evData={id:eventId,title,date,size,joined:[]};
-  const encoded=encode(evData);
-  const joinUrl=base()+'#join?id='+eventId+'&d='+encoded;
-  document.getElementById('jlink-text').textContent=joinUrl;
-  document.getElementById('jlink-area').style.display='block';
-  window._evData=evData;
-  toast('링크가 생성되었습니다! Teams에 공유하세요 🎉');
+  const date = document.getElementById('ev-date').value;
+  const rawTitle = document.getElementById('ev-title').value.trim();
+  const title = rawTitle || (date ? date.replace(/-/g,'/') + ' 랜덤 런치' : '랜덤 런치');
+  const size = parseInt(document.getElementById('ev-size').value) || 3;
+
+  currentEvId = genId();
+  const evMeta = { id:currentEvId, title, date, size, createdAt: Date.now() };
+
+  // Firebase에 이벤트 메타 저장
+  db.ref('events/' + currentEvId + '/meta').set(evMeta);
+
+  const joinUrl = base() + '#join?id=' + currentEvId + '&m=' + encode(evMeta);
+  document.getElementById('jlink-text').textContent = joinUrl;
+  document.getElementById('jlink-area').style.display = 'block';
+  toast('링크가 생성되었습니다! 🎉');
 }
 
-function refreshJ(){
-  const ev=window._evData;
-  if(!ev){document.getElementById('jlist').innerHTML='<span style="font-size:13px;color:var(--t3)">이벤트를 먼저 생성하세요</span>';return;}
-  const joined=ev.joined||[];
-  document.getElementById('jlist').innerHTML=joined.length
-    ?joined.map(m=>`<span class="chip" style="background:var(--green2);border-color:var(--green);color:var(--green)">✓ ${m}</span>`).join('')
-    :'<span style="font-size:13px;color:var(--t3)">아직 참여자가 없습니다</span>';
-  document.getElementById('jcount-admin').textContent=`총 ${joined.length}명 참여 신청`;
+// 실시간 리스너
+function startListening(evId){
+  // 기존 리스너 해제
+  if(currentListener){
+    db.ref('events/' + currentListener + '/joined').off();
+  }
+  currentListener = evId;
+
+  db.ref('events/' + evId + '/joined').on('value', snap=>{
+    const data = snap.val() || {};
+    const joined = Object.values(data).map(v=>v.name).filter(Boolean);
+    renderAdminJoined(joined);
+  });
+}
+
+function renderAdminJoined(joined){
+  const el = document.getElementById('jlist');
+  el.innerHTML = joined.length
+    ? joined.map(m=>`<span class="chip" style="background:var(--green2);border-color:var(--green);color:var(--green);cursor:default">✓ ${m}</span>`).join('')
+    : '<span style="font-size:13px;color:var(--t3)">아직 신청자가 없습니다</span>';
+  document.getElementById('jcount-admin').textContent = `총 ${joined.length}명 참여 신청`;
+  // 그룹 생성용 캐시
+  window._adminJoined = joined;
 }
 
 function genGroups(){
-  const ev=window._evData;
-  if(!ev){toast('이벤트를 먼저 생성하세요');return;}
-  const pool=ev.joined||[];
-  if(pool.length<2){toast('참여자가 2명 이상이어야 합니다');return;}
-  const groups=divide(shuffle([...pool]),ev.size);
-  ev.groups=groups;
-  window._evData=ev;
-  renderAdminGroups();
-  const rUrl=base()+'#result?d='+encode({...ev,groups});
-  document.getElementById('rlink-text').textContent=rUrl;
-  document.getElementById('rlink-area').style.display='block';
-}
+  const joined = window._adminJoined || [];
+  if(joined.length < 2){ toast('참여자가 2명 이상이어야 합니다'); return; }
+  const size = parseInt(document.getElementById('ev-size').value) || 3;
+  const groups = divide(shuffle([...joined]), size);
 
-function renderAdminGroups(){
-  const ev=window._evData;
-  const el=document.getElementById('ag-result');
-  if(!ev||!ev.groups||!ev.groups.length){
-    el.innerHTML='<div class="card" style="text-align:center;color:var(--t3);font-size:14px;padding:2rem">그룹 생성 버튼을 눌러주세요</div>';return;
+  // Firebase에 결과 저장
+  if(currentEvId){
+    db.ref('events/' + currentEvId + '/groups').set(groups);
+    db.ref('events/' + currentEvId + '/meta/status').set('done');
   }
-  const pool=ev.joined||[];
-  el.innerHTML=`<div class="srow">
-    <div class="sc"><div class="sn">${pool.length}</div><div class="sl">참여 인원</div></div>
-    <div class="sc"><div class="sn">${ev.groups.length}</div><div class="sl">그룹 수</div></div>
-    <div class="sc"><div class="sn">${ev.size}</div><div class="sl">그룹당 인원</div></div>
-  </div>
-  <div class="ggrid">${ev.groups.map((g,i)=>gcHtml(g,i)).join('')}</div>`;
+
+  window._adminGroups = groups;
+  renderAdminGroups(groups, joined.length, size);
+
+  // 결과 링크: 메타 + 그룹 인코딩
+  const rData = { evId: currentEvId };
+  const rUrl = base() + '#result?d=' + encode(rData);
+  document.getElementById('rlink-text').textContent = rUrl;
+  document.getElementById('rlink-area').style.display = 'block';
 }
 
-// ════════════════════════════
+function renderAdminGroups(groups, total, size){
+  if(!groups) groups = window._adminGroups;
+  const el = document.getElementById('ag-result');
+  if(!groups || !groups.length){
+    el.innerHTML = '<div class="card" style="text-align:center;color:var(--t3);font-size:14px;padding:2rem">그룹 생성 버튼을 눌러주세요</div>';
+    return;
+  }
+  el.innerHTML = `<div class="srow">
+    <div class="sc"><div class="sn">${total||groups.flat().length}</div><div class="sl">참여 인원</div></div>
+    <div class="sc"><div class="sn">${groups.length}</div><div class="sl">그룹 수</div></div>
+    <div class="sc"><div class="sn">${size||groups[0].length}</div><div class="sl">그룹당 인원</div></div>
+  </div>
+  <div class="ggrid">${groups.map((g,i)=>gcHtml(g,i)).join('')}</div>`;
+}
+
+// ══════════════════════════════
 // 참여 신청 페이지
-// ════════════════════════════
+// ══════════════════════════════
+let joinEvId = null;
+let joinListener = null;
+
 function initJoin(params){
-  const d=params.get('d');
-  if(!d){document.getElementById('j-info').innerHTML='<div class="card" style="color:var(--coral);text-align:center;padding:2rem">유효하지 않은 링크입니다</div>';return;}
-  const ev=decode(d);
-  if(!ev){document.getElementById('j-info').innerHTML='<div class="card" style="color:var(--coral);text-align:center;padding:2rem">링크가 올바르지 않습니다</div>';return;}
-  window._joinEv=ev;
-  const dateStr=ev.date?new Date(ev.date+'T00:00:00').toLocaleDateString('ko-KR',{month:'long',day:'numeric',weekday:'short'}):'';
-  document.getElementById('j-info').innerHTML=`<div class="card"><div style="font-size:18px;font-weight:700;margin-bottom:4px">${ev.title}</div><div style="font-size:13px;color:var(--t2)">${dateStr}</div></div>`;
-  document.getElementById('j-pill').innerHTML='<span class="spill sopen">● 모집 중</span>';
-  // 이름 입력 Enter 키
-  const inp=document.getElementById('j-name-input');
-  inp.addEventListener('keydown',e=>{if(e.key==='Enter')joinSubmit();});
-  renderJTags(ev);
-  updJCount(ev);
+  const evId = params.get('id');
+  const m = params.get('m');
+  if(!evId || !m){
+    document.getElementById('j-info').innerHTML = '<div class="card" style="color:var(--coral);text-align:center;padding:2rem">유효하지 않은 링크입니다</div>';
+    return;
+  }
+  const meta = decode(m);
+  if(!meta){
+    document.getElementById('j-info').innerHTML = '<div class="card" style="color:var(--coral);text-align:center;padding:2rem">링크가 올바르지 않습니다</div>';
+    return;
+  }
+
+  joinEvId = evId;
+
+  // Firebase 초기화 (join 페이지에서도 필요)
+  if(!initFirebase()){
+    // Firebase 없어도 URL 기반으로 최소 동작
+    document.getElementById('j-info').innerHTML = buildInfoCard(meta);
+    document.getElementById('j-pill').innerHTML = '<span class="spill sopen">● 모집 중</span>';
+    return;
+  }
+
+  document.getElementById('j-info').innerHTML = buildInfoCard(meta);
+  document.getElementById('j-pill').innerHTML = '<span class="spill sopen">● 모집 중</span>';
+  document.getElementById('j-name-input').focus();
+
+  // 실시간으로 참여자 목록 구독
+  if(joinListener) db.ref('events/'+joinListener+'/joined').off();
+  joinListener = evId;
+  db.ref('events/'+evId+'/joined').on('value', snap=>{
+    const data = snap.val() || {};
+    const joined = Object.values(data).map(v=>({key: v.key, name: v.name})).filter(v=>v.name);
+    renderJoinTags(joined);
+    document.getElementById('j-count').textContent = `현재 ${joined.length}명 참여 신청`;
+  });
+}
+
+function buildInfoCard(meta){
+  const dateStr = meta.date ? new Date(meta.date+'T00:00:00').toLocaleDateString('ko-KR',{month:'long',day:'numeric',weekday:'short'}) : '';
+  return `<div class="card"><div style="font-size:18px;font-weight:700;margin-bottom:4px">${meta.title}</div><div style="font-size:13px;color:var(--t2)">${dateStr}</div></div>`;
+}
+
+function renderJoinTags(joined){
+  const el = document.getElementById('j-chips');
+  el.innerHTML = joined.length
+    ? joined.map(v=>`<span class="jtag">${v.name}<button onclick="cancelJoin('${v.key}')" title="취소">×</button></span>`).join('')
+    : '<span style="font-size:13px;color:var(--t3)">아직 신청자가 없습니다</span>';
 }
 
 function joinSubmit(){
-  const ev=window._joinEv;
-  if(!ev)return;
-  const inp=document.getElementById('j-name-input');
-  const name=inp.value.trim();
-  if(!name){inp.focus();return;}
-  if(ev.joined.includes(name)){toast('이미 신청된 이름입니다');inp.select();return;}
-  ev.joined.push(name);
-  inp.value='';
-  inp.focus();
-  window._joinEv=ev;
-  // URL 업데이트 (새로고침해도 유지)
-  history.replaceState(null,'','#join?id='+(ev.id||'')+'&d='+encode(ev));
-  renderJTags(ev);
-  updJCount(ev);
-  toast(name+' 참여 신청 완료! 🎉');
+  if(!joinEvId){ toast('잘못된 접근입니다'); return; }
+  const inp = document.getElementById('j-name-input');
+  const name = inp.value.trim();
+  if(!name){ inp.focus(); return; }
+
+  // 중복 확인 후 저장
+  db.ref('events/'+joinEvId+'/joined').once('value').then(snap=>{
+    const data = snap.val() || {};
+    const existing = Object.values(data).map(v=>v.name);
+    if(existing.includes(name)){ toast('이미 신청된 이름입니다'); inp.select(); return; }
+    const key = db.ref('events/'+joinEvId+'/joined').push().key;
+    db.ref('events/'+joinEvId+'/joined/'+key).set({ name, key, joinedAt: Date.now() });
+    inp.value = '';
+    inp.focus();
+    toast(name + ' 참여 신청 완료! 🎉');
+  });
 }
 
-function cancelJoin(name){
-  const ev=window._joinEv;
-  if(!ev)return;
-  ev.joined=ev.joined.filter(m=>m!==name);
-  window._joinEv=ev;
-  history.replaceState(null,'','#join?id='+(ev.id||'')+'&d='+encode(ev));
-  renderJTags(ev);
-  updJCount(ev);
-  toast(name+' 참여 취소');
+function cancelJoin(key){
+  if(!joinEvId || !key) return;
+  db.ref('events/'+joinEvId+'/joined/'+key).remove();
+  toast('참여 취소되었습니다');
 }
 
-function renderJTags(ev){
-  const joined=ev.joined||[];
-  document.getElementById('j-chips').innerHTML=joined.length
-    ?joined.map(m=>`<span class="jname-tag">${m}<button onclick="cancelJoin(${JSON.stringify(m)})" title="취소">×</button></span>`).join('')
-    :'<span style="font-size:13px;color:var(--t3)">아직 신청자가 없습니다</span>';
-}
-
-function updJCount(ev){
-  document.getElementById('j-count').textContent=`현재 ${(ev.joined||[]).length}명 참여 신청`;
-}
-
-function copyJoinLink(){
+function cpJoinLink(){
   navigator.clipboard.writeText(location.href).then(()=>toast('링크가 복사되었습니다!'));
 }
 
-// ════════════════════════════
-// 결과 공지 페이지
-// ════════════════════════════
+// ══════════════════════════════
+// 결과 페이지
+// ══════════════════════════════
 function initResult(params){
-  const d=params.get('d');
-  if(!d){document.getElementById('r-groups').innerHTML='<div class="card" style="text-align:center;color:var(--t3);font-size:14px;padding:2rem">유효하지 않은 링크입니다</div>';return;}
-  const ev=decode(d);
-  if(!ev||!ev.groups||!ev.groups.length){document.getElementById('r-groups').innerHTML='<div class="card" style="text-align:center;color:var(--t3);font-size:14px;padding:2rem">아직 그룹이 생성되지 않았습니다</div>';return;}
+  const d = params.get('d');
+  if(!d){ document.getElementById('r-groups').innerHTML='<div class="card" style="text-align:center;color:var(--t3);padding:2rem">유효하지 않은 링크입니다</div>'; return; }
+  const rData = decode(d);
+  if(!rData){ return; }
 
-  window._resultEv=ev;
-  const dateStr=ev.date?new Date(ev.date+'T00:00:00').toLocaleDateString('ko-KR',{month:'long',day:'numeric',weekday:'short'}):'';
-  document.getElementById('r-title').textContent=ev.title;
-  document.getElementById('r-date').textContent=dateStr;
-  const pool=ev.groups.flat();
-  document.getElementById('r-stats').innerHTML=`
-    <div class="sc"><div class="sn">${pool.length}</div><div class="sl">참여 인원</div></div>
-    <div class="sc"><div class="sn">${ev.groups.length}</div><div class="sl">그룹 수</div></div>
-    <div class="sc"><div class="sn">${ev.size}</div><div class="sl">그룹당 인원</div></div>`;
-  document.getElementById('r-groups').innerHTML=ev.groups.map((g,i)=>gcHtml(g,i)).join('');
+  if(!initFirebase()){ return; }
+
+  // Firebase에서 결과 실시간 구독
+  db.ref('events/'+rData.evId).once('value').then(snap=>{
+    const ev = snap.val();
+    if(!ev || !ev.groups){ document.getElementById('r-groups').innerHTML='<div class="card" style="text-align:center;color:var(--t3);padding:2rem">아직 그룹이 생성되지 않았습니다</div>'; return; }
+    const meta = ev.meta || {};
+    const dateStr = meta.date ? new Date(meta.date+'T00:00:00').toLocaleDateString('ko-KR',{month:'long',day:'numeric',weekday:'short'}) : '';
+    document.getElementById('r-title').textContent = meta.title || '랜덤 런치 그룹';
+    document.getElementById('r-date').textContent = dateStr;
+    const pool = ev.groups.flat();
+    document.getElementById('r-stats').innerHTML = `
+      <div class="sc"><div class="sn">${pool.length}</div><div class="sl">참여 인원</div></div>
+      <div class="sc"><div class="sn">${ev.groups.length}</div><div class="sl">그룹 수</div></div>
+      <div class="sc"><div class="sn">${meta.size||3}</div><div class="sl">그룹당 인원</div></div>`;
+    document.getElementById('r-groups').innerHTML = ev.groups.map((g,i)=>gcHtml(g,i)).join('');
+    window._resultEv = { ...meta, groups: ev.groups };
+  });
 }
 
 function cpResultText(){
-  const ev=window._resultEv;
-  if(!ev||!ev.groups)return;
-  const dateStr=ev.date?new Date(ev.date+'T00:00:00').toLocaleDateString('ko-KR',{month:'long',day:'numeric'}):'';
-  let txt=`🍽️ ${ev.title} (${dateStr})\n\n`;
-  ev.groups.forEach((g,i)=>{txt+=`[그룹 ${i+1}] ${g.join(', ')}\n`;});
+  const ev = window._resultEv;
+  if(!ev||!ev.groups) return;
+  const dateStr = ev.date ? new Date(ev.date+'T00:00:00').toLocaleDateString('ko-KR',{month:'long',day:'numeric'}) : '';
+  let txt = `🍽️ ${ev.title||'랜덤 런치'} (${dateStr})\n\n`;
+  ev.groups.forEach((g,i)=>{ txt+=`[그룹 ${i+1}] ${g.join(', ')}\n`; });
   navigator.clipboard.writeText(txt).then(()=>toast('클립보드에 복사되었습니다!'));
 }
 
-// ════════════════════════════
+// ══════════════════════════════
 // 공통 유틸
-// ════════════════════════════
-function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
-function divide(arr,size){const t=arr.length,n=Math.ceil(t/size),b=Math.floor(t/n);let r=t%n,g=[],i=0;for(let k=0;k<n;k++){const s=b+(r-->0?1:0);g.push(arr.slice(i,i+s));i+=s;}return g;}
+// ══════════════════════════════
+function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]; } return a; }
+function divide(arr,size){ const t=arr.length,n=Math.ceil(t/size),b=Math.floor(t/n);let r=t%n,g=[],i=0;for(let k=0;k<n;k++){const s=b+(r-->0?1:0);g.push(arr.slice(i,i+s));i+=s;}return g; }
 
 function gcHtml(group,idx){
-  return `<div class="gc"><div class="gbadge">그룹 ${idx+1}</div>${group.map(m=>{const[bg,fg]=gc(m);return`<div class="gmem"><div class="av" style="background:${bg};color:${fg}">${ini(m)}</div><div class="gname">${m}</div></div>`;}).join('')}</div>`;
+  return `<div class="gc"><div class="gbadge">그룹 ${idx+1}</div>${group.map(m=>{const[bg,fg]=getColor(m);return`<div class="gmem"><div class="av" style="background:${bg};color:${fg}">${ini(m)}</div><div class="gname">${m}</div></div>`;}).join('')}</div>`;
 }
 
 function cpLink(spanId,btn){
   navigator.clipboard.writeText(document.getElementById(spanId).textContent)
-    .then(()=>{btn.textContent='✓ 복사됨';btn.classList.add('ok');setTimeout(()=>{btn.textContent='복사';btn.classList.remove('ok');},2000);})
-    .catch(()=>{
-      // clipboard API 실패시 수동 선택
-      const el=document.getElementById(spanId);
-      const range=document.createRange();range.selectNode(el);
-      window.getSelection().removeAllRanges();window.getSelection().addRange(range);
-      toast('텍스트를 선택했습니다. Ctrl+C로 복사하세요');
-    });
+    .then(()=>{ btn.textContent='✓ 복사됨'; btn.classList.add('ok'); setTimeout(()=>{ btn.textContent='복사'; btn.classList.remove('ok'); },2000); })
+    .catch(()=>{ toast('Ctrl+C로 복사해 주세요'); });
 }
 
-function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2500); }
 </script>
 </body>
 </html>
