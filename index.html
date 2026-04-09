@@ -7,187 +7,157 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #F4F3EF;
-  --surface: #FFFFFF;
-  --border: #E5E3DB;
-  --text-1: #18171A;
-  --text-2: #6B6876;
-  --text-3: #AAA7B8;
-  --accent: #4B3FD4;
-  --accent-2: #EEEDFE;
-  --accent-3: #3530A8;
-  --green: #1B9E72;
-  --green-2: #E0F5ED;
-  --coral: #D85A30;
-  --coral-2: #FAECE7;
-  --amber: #B87214;
-  --amber-2: #FAF0DA;
-  --r-sm: 10px;
-  --r-md: 14px;
-  --r-lg: 20px;
-  --shadow: 0 2px 8px rgba(0,0,0,0.07), 0 0 0 1px rgba(0,0,0,0.04);
+  --bg:#F4F3EF; --surface:#fff; --border:#E5E3DB;
+  --t1:#18171A; --t2:#6B6876; --t3:#AAA7B8;
+  --accent:#4B3FD4; --accent2:#EEEDFE; --accent3:#3530A8;
+  --green:#1B9E72; --green2:#E0F5ED;
+  --coral:#D85A30; --coral2:#FAECE7;
+  --rsm:10px; --rmd:14px; --rlg:20px;
+  --sh:0 2px 8px rgba(0,0,0,.07),0 0 0 1px rgba(0,0,0,.04);
 }
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: var(--text-1); min-height: 100vh; }
-.page { display: none; min-height: 100vh; padding: 2rem 1rem 5rem; }
-.page.active { display: block; }
-.container { max-width: 640px; margin: 0 auto; }
-.topbar { display: flex; align-items: center; gap: 10px; margin-bottom: 2rem; }
-.topbar .logo { font-family: 'DM Sans', sans-serif; font-size: 20px; font-weight: 700; color: var(--text-1); flex: 1; }
-.topbar .logo span { color: var(--accent); }
-.badge-admin { background: var(--accent); color: #fff; font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 99px; }
-.card { background: var(--surface); border-radius: var(--r-lg); box-shadow: var(--shadow); padding: 1.4rem 1.5rem; margin-bottom: 1rem; }
-.card-label { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; color: var(--text-3); text-transform: uppercase; margin-bottom: 12px; }
-input[type=text], input[type=date], input[type=number], textarea {
-  font-family: inherit; font-size: 14px; width: 100%;
-  background: var(--bg); border: 1.5px solid var(--border);
-  border-radius: var(--r-sm); padding: 10px 13px; color: var(--text-1);
-  outline: none; transition: border-color .15s, box-shadow .15s;
-}
-input:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(75,63,212,.1); }
-.btn { font-family: inherit; font-size: 14px; font-weight: 700; border: none; border-radius: var(--r-sm); padding: 11px 20px; cursor: pointer; transition: all .15s; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
-.btn-primary { background: var(--accent); color: #fff; box-shadow: 0 4px 12px rgba(75,63,212,.25); }
-.btn-primary:hover { background: var(--accent-3); }
-.btn-primary:active { transform: scale(.98); }
-.btn-primary:disabled { background: var(--border); color: var(--text-3); box-shadow: none; cursor: not-allowed; }
-.btn-outline { background: var(--surface); color: var(--accent); border: 1.5px solid var(--accent-2); }
-.btn-outline:hover { background: var(--accent-2); }
-.btn-ghost { background: transparent; color: var(--text-2); border: 1.5px solid var(--border); }
-.btn-ghost:hover { background: var(--bg); }
-.btn-full { width: 100%; }
-.btn-sm { font-size: 12px; padding: 7px 14px; }
-.chip-grid { display: flex; flex-wrap: wrap; gap: 8px; }
-.chip { display: inline-flex; align-items: center; gap: 5px; background: var(--bg); border: 1.5px solid var(--border); border-radius: 99px; padding: 6px 12px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all .15s; user-select: none; }
-.chip.remove-mode:hover { border-color: var(--coral); background: var(--coral-2); color: var(--coral); }
-.join-chip { display: inline-flex; align-items: center; justify-content: center; gap: 6px; background: var(--bg); border: 2px solid var(--border); border-radius: 99px; padding: 10px 18px; font-size: 14px; font-weight: 500; cursor: pointer; transition: all .2s; user-select: none; }
-.join-chip:hover { border-color: var(--accent); background: var(--accent-2); transform: translateY(-1px); }
-.join-chip.joined { background: var(--green); border-color: var(--green); color: #fff; }
-.join-chip.joined:hover { background: #157a58; border-color: #157a58; }
-.join-chip .j-check { display: none; }
-.join-chip.joined .j-check { display: inline; }
-.join-chip.joined .j-dot { display: none; }
-.j-dot-circle { width: 7px; height: 7px; border-radius: 50%; background: var(--text-3); display: inline-block; }
-.group-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 12px; }
-.group-card { background: var(--surface); border-radius: var(--r-md); box-shadow: var(--shadow); padding: 1rem 1.1rem; animation: fadeUp .25s ease both; }
-@keyframes fadeUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
-.group-card:nth-child(1){animation-delay:.00s}.group-card:nth-child(2){animation-delay:.05s}.group-card:nth-child(3){animation-delay:.10s}.group-card:nth-child(n+4){animation-delay:.15s}
-.g-badge { font-size: 11px; font-weight: 700; letter-spacing: .06em; padding: 3px 10px; border-radius: 99px; display: inline-block; margin-bottom: 10px; background: var(--accent-2); color: var(--accent); }
-.g-member { display: flex; align-items: center; gap: 9px; padding: 5px 0; border-bottom: 1px solid var(--bg); }
-.g-member:last-child { border-bottom: none; }
-.avatar { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
-.g-name { font-size: 13px; font-weight: 500; }
-.stat-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 1.2rem; }
-.stat { background: var(--surface); border-radius: var(--r-md); padding: 14px; box-shadow: var(--shadow); }
-.stat-n { font-size: 22px; font-weight: 700; }
-.stat-l { font-size: 11px; color: var(--text-2); margin-top: 2px; }
-.status-pill { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 700; padding: 4px 11px; border-radius: 99px; }
-.status-open { background: var(--green-2); color: var(--green); }
-.status-done { background: var(--accent-2); color: var(--accent); }
-.link-box { display: flex; align-items: center; gap: 8px; background: var(--bg); border: 1.5px solid var(--border); border-radius: var(--r-sm); padding: 10px 12px; }
-.link-url { font-size: 12px; color: var(--text-2); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.copy-btn { font-family: inherit; font-size: 12px; font-weight: 700; background: var(--accent); color: #fff; border: none; border-radius: 6px; padding: 6px 12px; cursor: pointer; white-space: nowrap; transition: background .15s; flex-shrink: 0; }
-.copy-btn:hover { background: var(--accent-3); }
-.copy-btn.copied { background: var(--green); }
-.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--text-1); color: #fff; font-size: 13px; font-weight: 500; padding: 10px 20px; border-radius: 99px; transition: transform .3s ease; z-index: 999; white-space: nowrap; pointer-events: none; }
-.toast.show { transform: translateX(-50%) translateY(0); }
-.divider { border: none; border-top: 1.5px solid var(--border); margin: 1.2rem 0; }
-.input-row { display: flex; gap: 8px; }
-.input-row input { flex: 1; }
-.step-tabs { display: flex; gap: 0; border-bottom: 2px solid var(--border); margin-bottom: 1.5rem; overflow-x: auto; }
-.step-tab { padding: 10px 16px; font-size: 13px; font-weight: 700; color: var(--text-3); cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px; transition: color .15s; white-space: nowrap; }
-.step-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
-.announce-box { background: var(--accent); border-radius: var(--r-lg); padding: 1.8rem 1.5rem; margin-bottom: 1rem; color: #fff; text-align: center; }
-.announce-emoji { font-size: 36px; margin-bottom: 8px; }
-.announce-title { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
-.announce-sub { font-size: 13px; opacity: .75; }
-.section-title { font-size: 26px; font-weight: 700; margin-bottom: 8px; line-height: 1.3; }
-.section-sub { font-size: 14px; color: var(--text-2); margin-bottom: 2rem; line-height: 1.7; }
-@media(max-width:480px){ .group-grid { grid-template-columns: 1fr 1fr; } }
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--t1);min-height:100vh}
+.page{display:none;min-height:100vh;padding:2rem 1rem 5rem}
+.page.active{display:block}
+.wrap{max-width:640px;margin:0 auto}
+.topbar{display:flex;align-items:center;gap:10px;margin-bottom:2rem}
+.logo{font-family:'DM Sans',sans-serif;font-size:20px;font-weight:700;flex:1}
+.logo span{color:var(--accent)}
+.badge{background:var(--accent);color:#fff;font-size:11px;font-weight:700;padding:3px 9px;border-radius:99px}
+.card{background:var(--surface);border-radius:var(--rlg);box-shadow:var(--sh);padding:1.4rem 1.5rem;margin-bottom:1rem}
+.clabel{font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--t3);text-transform:uppercase;margin-bottom:12px}
+input[type=text],input[type=date],input[type=number]{
+  font-family:inherit;font-size:14px;width:100%;
+  background:var(--bg);border:1.5px solid var(--border);
+  border-radius:var(--rsm);padding:10px 13px;color:var(--t1);
+  outline:none;transition:border-color .15s,box-shadow .15s}
+input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(75,63,212,.1)}
+.btn{font-family:inherit;font-size:14px;font-weight:700;border:none;border-radius:var(--rsm);padding:11px 20px;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.bp{background:var(--accent);color:#fff;box-shadow:0 4px 12px rgba(75,63,212,.25)}
+.bp:hover{background:var(--accent3)}
+.bp:active{transform:scale(.98)}
+.bo{background:var(--surface);color:var(--accent);border:1.5px solid var(--accent2)}
+.bo:hover{background:var(--accent2)}
+.bg{background:transparent;color:var(--t2);border:1.5px solid var(--border)}
+.bg:hover{background:var(--bg)}
+.bfull{width:100%}
+.bsm{font-size:12px;padding:7px 14px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:5px;background:var(--bg);border:1.5px solid var(--border);border-radius:99px;padding:6px 12px;font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;user-select:none}
+.chip:hover{border-color:var(--coral);background:var(--coral2);color:var(--coral)}
+.jchip{display:inline-flex;align-items:center;gap:6px;background:var(--bg);border:2px solid var(--border);border-radius:99px;padding:10px 18px;font-size:14px;font-weight:500;cursor:pointer;transition:all .2s;user-select:none}
+.jchip:hover{border-color:var(--accent);background:var(--accent2);transform:translateY(-1px)}
+.jchip.on{background:var(--green);border-color:var(--green);color:#fff}
+.jchip.on:hover{background:#157a58;border-color:#157a58}
+.ggrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px}
+.gc{background:var(--surface);border-radius:var(--rmd);box-shadow:var(--sh);padding:1rem 1.1rem;animation:fu .25s ease both}
+@keyframes fu{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.gc:nth-child(1){animation-delay:.0s}.gc:nth-child(2){animation-delay:.05s}.gc:nth-child(3){animation-delay:.1s}.gc:nth-child(n+4){animation-delay:.15s}
+.gbadge{font-size:11px;font-weight:700;letter-spacing:.06em;padding:3px 10px;border-radius:99px;display:inline-block;margin-bottom:10px;background:var(--accent2);color:var(--accent)}
+.gmem{display:flex;align-items:center;gap:9px;padding:5px 0;border-bottom:1px solid var(--bg)}
+.gmem:last-child{border-bottom:none}
+.av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
+.gname{font-size:13px;font-weight:500}
+.srow{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1.2rem}
+.sc{background:var(--surface);border-radius:var(--rmd);padding:14px;box-shadow:var(--sh)}
+.sn{font-size:22px;font-weight:700}
+.sl{font-size:11px;color:var(--t2);margin-top:2px}
+.spill{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;padding:4px 11px;border-radius:99px}
+.sopen{background:var(--green2);color:var(--green)}
+.sdone{background:var(--accent2);color:var(--accent)}
+.lbox{display:flex;align-items:center;gap:8px;background:var(--bg);border:1.5px solid var(--border);border-radius:var(--rsm);padding:10px 12px}
+.lurl{font-size:12px;color:var(--t2);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cbtn{font-family:inherit;font-size:12px;font-weight:700;background:var(--accent);color:#fff;border:none;border-radius:6px;padding:6px 12px;cursor:pointer;white-space:nowrap;transition:background .15s;flex-shrink:0}
+.cbtn:hover{background:var(--accent3)}
+.cbtn.ok{background:var(--green)}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--t1);color:#fff;font-size:13px;font-weight:500;padding:10px 20px;border-radius:99px;transition:transform .3s;z-index:999;white-space:nowrap;pointer-events:none}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.hr{border:none;border-top:1.5px solid var(--border);margin:1.2rem 0}
+.irow{display:flex;gap:8px}
+.irow input{flex:1}
+.tabs{display:flex;border-bottom:2px solid var(--border);margin-bottom:1.5rem;overflow-x:auto}
+.tab{padding:10px 16px;font-size:13px;font-weight:700;color:var(--t3);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;transition:color .15s;white-space:nowrap}
+.tab.on{color:var(--accent);border-bottom-color:var(--accent)}
+.abox{background:var(--accent);border-radius:var(--rlg);padding:1.8rem 1.5rem;margin-bottom:1rem;color:#fff;text-align:center}
+.aemoji{font-size:36px;margin-bottom:8px}
+.atitle{font-size:20px;font-weight:700;margin-bottom:4px}
+.asub{font-size:13px;opacity:.75}
+@media(max-width:480px){.ggrid{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body>
 
 <!-- HOME -->
-<div id="page-home" class="page">
-<div class="container">
-  <div style="padding-top:3rem;text-align:center;">
-    <div style="font-size:52px;margin-bottom:1rem;">🍽️</div>
-    <div class="section-title">팀 랜덤 런치</div>
-    <div class="section-sub">날짜를 정하고 참여자를 모집한 뒤<br>자동으로 랜덤 그룹을 만들어드려요.</div>
-    <div style="display:flex;flex-direction:column;gap:10px;max-width:280px;margin:0 auto;">
-      <button class="btn btn-primary" style="font-size:15px;padding:14px;" onclick="location.hash='admin'">관리자로 시작하기 →</button>
-    </div>
+<div id="pg-home" class="page">
+<div class="wrap" style="padding-top:3rem;text-align:center">
+  <div style="font-size:52px;margin-bottom:1rem">🍽️</div>
+  <div style="font-size:26px;font-weight:700;margin-bottom:8px;line-height:1.3">팀 랜덤 런치</div>
+  <div style="font-size:14px;color:var(--t2);margin-bottom:2rem;line-height:1.7">날짜를 정하고 참여자를 모집한 뒤<br>자동으로 랜덤 그룹을 만들어드려요.</div>
+  <div style="max-width:280px;margin:0 auto">
+    <button class="btn bp bfull" style="font-size:15px;padding:14px" onclick="goAdmin()">관리자로 시작하기 →</button>
   </div>
 </div>
 </div>
 
 <!-- ADMIN -->
-<div id="page-admin" class="page">
-<div class="container">
-  <div class="topbar">
-    <div class="logo">🍽️ 랜덤 <span>런치</span></div>
-    <div class="badge-admin">관리자</div>
-  </div>
-  <div class="step-tabs">
-    <div class="step-tab active" id="tab-0" onclick="adminTab(0)">① 이벤트 설정</div>
-    <div class="step-tab" id="tab-1" onclick="adminTab(1)">② 참여 현황</div>
-    <div class="step-tab" id="tab-2" onclick="adminTab(2)">③ 그룹 생성</div>
+<div id="pg-admin" class="page">
+<div class="wrap">
+  <div class="topbar"><div class="logo">🍽️ 랜덤 <span>런치</span></div><div class="badge">관리자</div></div>
+  <div class="tabs">
+    <div class="tab on" id="tab0" onclick="aTab(0)">① 이벤트 설정</div>
+    <div class="tab" id="tab1" onclick="aTab(1)">② 참여 현황</div>
+    <div class="tab" id="tab2" onclick="aTab(2)">③ 그룹 생성</div>
   </div>
 
-  <!-- STEP 0 -->
-  <div id="admin-step-0">
+  <div id="as0">
     <div class="card">
-      <div class="card-label">이벤트 정보</div>
-      <div style="display:grid;gap:10px;">
-        <div><div style="font-size:12px;color:var(--text-2);margin-bottom:5px;">점심 날짜</div><input type="date" id="event-date"/></div>
-        <div><div style="font-size:12px;color:var(--text-2);margin-bottom:5px;">이벤트 제목 (선택)</div><input type="text" id="event-title" placeholder="예: 5월 4주차 랜덤 런치"/></div>
-        <div><div style="font-size:12px;color:var(--text-2);margin-bottom:5px;">그룹당 인원 수</div><input type="number" id="admin-group-size" value="3" min="2" max="10" style="width:90px;"/></div>
+      <div class="clabel">이벤트 정보</div>
+      <div style="display:grid;gap:10px">
+        <div><div style="font-size:12px;color:var(--t2);margin-bottom:5px">점심 날짜</div><input type="date" id="ev-date"></div>
+        <div><div style="font-size:12px;color:var(--t2);margin-bottom:5px">이벤트 제목 (선택)</div><input type="text" id="ev-title" placeholder="예: 5월 4주차 랜덤 런치"></div>
+        <div><div style="font-size:12px;color:var(--t2);margin-bottom:5px">그룹당 인원 수</div><input type="number" id="ev-size" value="3" min="2" max="10" style="width:90px"></div>
       </div>
     </div>
     <div class="card">
-      <div class="card-label">팀 멤버 등록</div>
-      <div class="input-row" style="margin-bottom:10px;">
-        <input type="text" id="member-input" placeholder="이름 입력 후 Enter"/>
-        <button class="btn btn-primary btn-sm" onclick="addMember()">추가</button>
+      <div class="clabel">팀 멤버 등록</div>
+      <div class="irow" style="margin-bottom:10px">
+        <input type="text" id="m-input" placeholder="이름 입력 후 Enter">
+        <button class="btn bp bsm" onclick="addM()">추가</button>
       </div>
-      <div class="chip-grid" id="member-chips"><span style="font-size:13px;color:var(--text-3);">멤버를 추가하세요</span></div>
+      <div class="chips" id="m-chips"><span style="font-size:13px;color:var(--t3)">멤버를 추가하세요</span></div>
     </div>
-    <button class="btn btn-primary btn-full" onclick="createEvent()">참여 신청 링크 생성 →</button>
-    <div id="join-link-area" style="display:none;margin-top:1rem;">
+    <button class="btn bp bfull" onclick="createEv()">참여 신청 링크 생성 →</button>
+    <div id="jlink-area" style="display:none;margin-top:1rem">
       <div class="card">
-        <div class="card-label">참여 신청 링크</div>
-        <div class="link-box"><span class="link-url" id="join-link-text"></span><button class="copy-btn" onclick="copyLink('join-link-text',this)">복사</button></div>
-        <div style="font-size:12px;color:var(--text-2);margin-top:8px;">이 링크를 Teams 채널에 공유하세요. 팀원들이 이름을 클릭해 참여 신청합니다.</div>
+        <div class="clabel">참여 신청 링크</div>
+        <div class="lbox"><span class="lurl" id="jlink-text"></span><button class="cbtn" onclick="cpLink('jlink-text',this)">복사</button></div>
+        <div style="font-size:12px;color:var(--t2);margin-top:8px">이 링크를 Teams 채널에 공유하세요. 팀원들이 이름을 클릭해 참여 신청합니다.</div>
       </div>
-      <button class="btn btn-outline btn-full" onclick="adminTab(1)">참여 현황 보기 →</button>
+      <button class="btn bo bfull" onclick="aTab(1)">참여 현황 보기 →</button>
     </div>
   </div>
 
-  <!-- STEP 1 -->
-  <div id="admin-step-1" style="display:none;">
+  <div id="as1" style="display:none">
     <div class="card">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-        <div class="card-label" style="margin:0;">참여 현황</div>
-        <button class="btn btn-ghost btn-sm" onclick="refreshJoined()">새로고침</button>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <div class="clabel" style="margin:0">참여 현황</div>
+        <button class="btn bg bsm" onclick="refreshJ()">새로고침</button>
       </div>
-      <div id="joined-list" class="chip-grid"></div>
-      <hr class="divider">
-      <div style="font-size:13px;color:var(--text-2);">미참여: <span id="not-joined-list" style="color:var(--text-3);"></span></div>
+      <div id="jlist" class="chips"></div>
+      <hr class="hr">
+      <div style="font-size:13px;color:var(--t2)">미참여: <span id="njlist" style="color:var(--t3)"></span></div>
     </div>
-    <button class="btn btn-primary btn-full" onclick="adminTab(2)">그룹 생성하기 →</button>
+    <button class="btn bp bfull" onclick="aTab(2)">그룹 생성하기 →</button>
   </div>
 
-  <!-- STEP 2 -->
-  <div id="admin-step-2" style="display:none;">
-    <div id="admin-group-result">
-      <div class="card" style="text-align:center;color:var(--text-3);font-size:14px;padding:2rem;">그룹 생성 버튼을 눌러주세요</div>
-    </div>
-    <button class="btn btn-primary btn-full" style="margin-bottom:10px;" onclick="generateGroups()">🔀 그룹 생성 / 다시 섞기</button>
-    <div id="result-link-area" style="display:none;">
+  <div id="as2" style="display:none">
+    <div id="ag-result"><div class="card" style="text-align:center;color:var(--t3);font-size:14px;padding:2rem">그룹 생성 버튼을 눌러주세요</div></div>
+    <button class="btn bp bfull" style="margin-bottom:10px" onclick="genGroups()">🔀 그룹 생성 / 다시 섞기</button>
+    <div id="rlink-area" style="display:none">
       <div class="card">
-        <div class="card-label">공지 링크</div>
-        <div class="link-box"><span class="link-url" id="result-link-text"></span><button class="copy-btn" onclick="copyLink('result-link-text',this)">복사</button></div>
-        <div style="font-size:12px;color:var(--text-2);margin-top:8px;">이 링크를 Teams에 공유하면 팀원들이 그룹 결과를 확인할 수 있습니다.</div>
+        <div class="clabel">공지 링크</div>
+        <div class="lbox"><span class="lurl" id="rlink-text"></span><button class="cbtn" onclick="cpLink('rlink-text',this)">복사</button></div>
+        <div style="font-size:12px;color:var(--t2);margin-top:8px">이 링크를 Teams에 공유하면 팀원들이 그룹 결과를 확인할 수 있습니다.</div>
       </div>
     </div>
   </div>
@@ -195,35 +165,31 @@ input:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px
 </div>
 
 <!-- JOIN -->
-<div id="page-join" class="page">
-<div class="container">
-  <div class="topbar">
-    <div class="logo">🍽️ 랜덤 <span>런치</span></div>
-    <span id="join-status-pill"></span>
-  </div>
-  <div id="join-event-info"></div>
+<div id="pg-join" class="page">
+<div class="wrap">
+  <div class="topbar"><div class="logo">🍽️ 랜덤 <span>런치</span></div><span id="j-pill"></span></div>
+  <div id="j-info"></div>
   <div class="card">
-    <div class="card-label">참여 신청</div>
-    <div style="font-size:13px;color:var(--text-2);margin-bottom:14px;">참석하실 분은 본인 이름을 클릭해 주세요 ✋</div>
-    <div class="chip-grid" id="join-chips"></div>
+    <div class="clabel">참여 신청</div>
+    <div style="font-size:13px;color:var(--t2);margin-bottom:14px">참석하실 분은 본인 이름을 클릭해 주세요 ✋</div>
+    <div class="chips" id="j-chips"></div>
   </div>
-  <div id="join-count-area" style="font-size:13px;color:var(--text-2);text-align:center;padding:1rem 0;"></div>
+  <div id="j-count" style="font-size:13px;color:var(--t2);text-align:center;padding:1rem 0"></div>
+  <div style="margin-top:1rem">
+    <button class="btn bg bfull" onclick="copyJoinLink()">🔗 이 참여 링크 복사해서 동료에게 공유</button>
+  </div>
 </div>
 </div>
 
 <!-- RESULT -->
-<div id="page-result" class="page">
-<div class="container">
+<div id="pg-result" class="page">
+<div class="wrap">
   <div class="topbar"><div class="logo">🍽️ 랜덤 <span>런치</span></div></div>
-  <div class="announce-box">
-    <div class="announce-emoji">🎉</div>
-    <div class="announce-title" id="result-event-title">오늘의 랜덤 런치 그룹</div>
-    <div class="announce-sub" id="result-event-date"></div>
-  </div>
-  <div class="stat-row" id="result-stats"></div>
-  <div class="group-grid" id="result-groups"></div>
-  <div style="margin-top:1.5rem;">
-    <button class="btn btn-ghost btn-full" onclick="copyResultText()">📋 결과 텍스트 복사 (Teams용)</button>
+  <div class="abox"><div class="aemoji">🎉</div><div class="atitle" id="r-title">오늘의 랜덤 런치 그룹</div><div class="asub" id="r-date"></div></div>
+  <div class="srow" id="r-stats"></div>
+  <div class="ggrid" id="r-groups"></div>
+  <div style="margin-top:1.5rem">
+    <button class="btn bg bfull" onclick="cpResultText()">📋 결과 텍스트 복사 (Teams용)</button>
   </div>
 </div>
 </div>
@@ -231,179 +197,269 @@ input:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px
 <div class="toast" id="toast"></div>
 
 <script>
-const STORAGE_KEY = 'rl_v2';
-function loadEvents(){ try{ return JSON.parse(localStorage.getItem(STORAGE_KEY))||{}; }catch{ return {}; } }
-function saveEvents(ev){ localStorage.setItem(STORAGE_KEY, JSON.stringify(ev)); }
-function getEvent(id){ return loadEvents()[id]; }
-function setEvent(id, data){ const ev=loadEvents(); ev[id]=data; saveEvents(ev); }
-function genId(){ return Math.random().toString(36).slice(2,8).toUpperCase(); }
+// ── 색상 팔레트 ──
+const AVT=[['#EEEDFE','#3C3489'],['#E1F5EE','#0F6E56'],['#FAECE7','#712B13'],['#EAF3DB','#27500A'],['#FAEEDA','#633806'],['#E6F1FB','#0C447C'],['#FBEAF0','#72243E'],['#F1EFE8','#444441']];
+function gc(n){let h=0;for(let c of n)h=(h*31+c.charCodeAt(0))%AVT.length;return AVT[h];}
+function ini(n){return n.trim().split(/\s+/).map(w=>w[0]).join('').toUpperCase().slice(0,2);}
 
-let currentEventId = null;
-let adminMembers = [];
+// ── 전역 상태 ──
+let members=[]; // 관리자가 등록한 전체 멤버
+let eventId=null;
 
+// ── 페이지 라우팅 ──
+// URL 구조:
+//   #admin                     → 관리자 페이지
+//   #join?id=XXX&d=...         → 참여 신청 (데이터 URL에 인코딩)
+//   #result?id=XXX&d=...       → 결과 공지
 function route(){
-  const hash = location.hash.slice(1);
-  ['home','admin','join','result'].forEach(p => document.getElementById('page-'+p).classList.remove('active'));
-  if(!hash || hash==='home'){ show('home'); }
-  else if(hash==='admin'){ show('admin'); initAdmin(); }
-  else if(hash.startsWith('join/')){ currentEventId=hash.slice(5); show('join'); initJoin(currentEventId); }
-  else if(hash.startsWith('result/')){ currentEventId=hash.slice(7); show('result'); initResult(currentEventId); }
-  else { show('home'); }
+  const raw=location.hash.slice(1);
+  const qIdx=raw.indexOf('?');
+  const view=qIdx===-1?raw:raw.slice(0,qIdx);
+  const qs=qIdx===-1?'':raw.slice(qIdx+1);
+  const params=new URLSearchParams(qs);
+
+  ['home','admin','join','result'].forEach(p=>document.getElementById('pg-'+p).classList.remove('active'));
+
+  if(!view||view==='home'){show('home');}
+  else if(view==='admin'){show('admin');initAdmin();}
+  else if(view==='join'){show('join');initJoin(params);}
+  else if(view==='result'){show('result');initResult(params);}
+  else{show('home');}
 }
-function show(p){ document.getElementById('page-'+p).classList.add('active'); }
-window.addEventListener('hashchange', route);
-window.addEventListener('DOMContentLoaded', ()=>{
-  document.getElementById('event-date').value = new Date().toISOString().slice(0,10);
-  document.getElementById('member-input').addEventListener('keydown', e=>{ if(e.key==='Enter') addMember(); });
+function show(p){document.getElementById('pg-'+p).classList.add('active');}
+function goAdmin(){location.hash='admin';}
+
+window.addEventListener('hashchange',route);
+window.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('ev-date').value=new Date().toISOString().slice(0,10);
+  document.getElementById('m-input').addEventListener('keydown',e=>{if(e.key==='Enter')addM();});
   route();
 });
 
-function getBase(){ return location.href.split('#')[0]; }
+// ── 데이터 직렬화 (URL에 담기) ──
+function encode(obj){return btoa(unescape(encodeURIComponent(JSON.stringify(obj))));}
+function decode(str){try{return JSON.parse(decodeURIComponent(escape(atob(str))));}catch{return null;}}
+function genId(){return Math.random().toString(36).slice(2,7).toUpperCase();}
+function base(){return location.href.split('#')[0];}
 
-/* ── ADMIN ── */
+// ════════════════════════════
+// 관리자 페이지
+// ════════════════════════════
 function initAdmin(){
-  renderMemberChips();
-  document.getElementById('join-link-area').style.display='none';
-  adminTab(0);
+  renderChips();
+  document.getElementById('jlink-area').style.display='none';
+  document.getElementById('rlink-area').style.display='none';
+  aTab(0);
 }
-function adminTab(idx){
-  [0,1,2].forEach(i=>{
-    document.getElementById('admin-step-'+i).style.display = i===idx?'block':'none';
-    document.getElementById('tab-'+i).classList.toggle('active', i===idx);
+
+function aTab(i){
+  [0,1,2].forEach(k=>{
+    document.getElementById('as'+k).style.display=k===i?'block':'none';
+    document.getElementById('tab'+k).classList.toggle('on',k===i);
   });
-  if(idx===1) refreshJoined();
-  if(idx===2 && currentEventId) renderAdminGroups();
+  if(i===1)refreshJ();
+  if(i===2)renderAdminGroups();
 }
-function addMember(){
-  const inp=document.getElementById('member-input');
+
+function addM(){
+  const inp=document.getElementById('m-input');
   const name=inp.value.trim();
-  if(!name||adminMembers.includes(name)){ inp.focus(); return; }
-  adminMembers.push(name); inp.value=''; inp.focus();
-  renderMemberChips();
+  if(!name||members.includes(name)){inp.focus();return;}
+  members.push(name);inp.value='';inp.focus();
+  renderChips();
 }
-function removeMember(name){
-  adminMembers=adminMembers.filter(m=>m!==name);
-  renderMemberChips();
+function removeM(name){
+  members=members.filter(m=>m!==name);
+  renderChips();
 }
-function renderMemberChips(){
-  const el=document.getElementById('member-chips');
-  el.innerHTML = adminMembers.length
-    ? adminMembers.map(m=>`<span class="chip remove-mode" onclick="removeMember('${escQ(m)}')">${m} <span style="opacity:.5">×</span></span>`).join('')
-    : '<span style="font-size:13px;color:var(--text-3);">멤버를 추가하세요</span>';
-}
-function createEvent(){
-  if(adminMembers.length<2){ showToast('멤버를 2명 이상 추가해 주세요'); return; }
-  const date=document.getElementById('event-date').value;
-  const title=document.getElementById('event-title').value.trim()||(date?date.replace(/-/g,'/')+ ' 랜덤 런치':'랜덤 런치');
-  const groupSize=parseInt(document.getElementById('admin-group-size').value)||3;
-  const id=genId();
-  setEvent(id,{ id, title, date, groupSize, members:[...adminMembers], joined:[], groups:[], status:'open', createdAt:Date.now() });
-  currentEventId=id;
-  const joinUrl=getBase()+'#join/'+id;
-  document.getElementById('join-link-text').textContent=joinUrl;
-  document.getElementById('join-link-area').style.display='block';
-  showToast('이벤트가 생성되었습니다!');
-}
-function refreshJoined(){
-  if(!currentEventId){ document.getElementById('joined-list').innerHTML='<span style="font-size:13px;color:var(--text-3);">이벤트를 먼저 생성하세요</span>'; return; }
-  const ev=getEvent(currentEventId); if(!ev) return;
-  const joined=ev.joined||[];
-  const notJoined=ev.members.filter(m=>!joined.includes(m));
-  document.getElementById('joined-list').innerHTML = joined.length
-    ? joined.map(m=>`<span class="chip" style="background:var(--green-2);border-color:var(--green);color:var(--green);">✓ ${m}</span>`).join('')
-    : '<span style="font-size:13px;color:var(--text-3);">아직 참여자가 없습니다</span>';
-  document.getElementById('not-joined-list').textContent = notJoined.length ? notJoined.join(', ') : '없음 (전원 참여!)';
+function renderChips(){
+  const el=document.getElementById('m-chips');
+  if(!members.length){el.innerHTML='<span style="font-size:13px;color:var(--t3)">멤버를 추가하세요</span>';return;}
+  el.innerHTML=members.map(m=>`<span class="chip" onclick="removeM(${JSON.stringify(m)})">${m} <span style="opacity:.5">×</span></span>`).join('');
 }
 
-/* ── GROUP ── */
-const AVT=[['#EEEDFE','#3C3489'],['#E1F5EE','#0F6E56'],['#FAECE7','#712B13'],['#EAF3DB','#27500A'],['#FAEEDA','#633806'],['#E6F1FB','#0C447C'],['#FBEAF0','#72243E'],['#F1EFE8','#444441']];
-function getColor(n){ let h=0; for(let c of n) h=(h*31+c.charCodeAt(0))%AVT.length; return AVT[h]; }
-function initials(n){ return n.trim().split(/\s+/).map(w=>w[0]).join('').toUpperCase().slice(0,2); }
-function shuffle(a){ const r=[...a]; for(let i=r.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1));[r[i],r[j]]=[r[j],r[i]]; } return r; }
-function divideGroups(arr,size){ const t=arr.length,n=Math.ceil(t/size),b=Math.floor(t/n); let r=t%n,g=[],i=0; for(let k=0;k<n;k++){ const s=b+(r-->0?1:0); g.push(arr.slice(i,i+s)); i+=s; } return g; }
-function groupCardHtml(group,idx){
-  return `<div class="group-card"><div class="g-badge">그룹 ${idx+1}</div>${group.map(m=>{const[bg,fg]=getColor(m);return`<div class="g-member"><div class="avatar" style="background:${bg};color:${fg}">${initials(m)}</div><div class="g-name">${m}</div></div>`;}).join('')}</div>`;
+function createEv(){
+  if(members.length<2){toast('멤버를 2명 이상 추가해 주세요');return;}
+  const date=document.getElementById('ev-date').value;
+  const titleEl=document.getElementById('ev-title').value.trim();
+  const title=titleEl||(date?date.replace(/-/g,'/')+ ' 랜덤 런치':'랜덤 런치');
+  const size=parseInt(document.getElementById('ev-size').value)||3;
+  eventId=genId();
+
+  // 이벤트 데이터를 URL에 인코딩
+  const evData={id:eventId,title,date,size,members:[...members],joined:[]};
+  const encoded=encode(evData);
+  const joinUrl=base()+'#join?id='+eventId+'&d='+encoded;
+
+  document.getElementById('jlink-text').textContent=joinUrl;
+  document.getElementById('jlink-area').style.display='block';
+
+  // 관리자 세션에 저장 (같은 탭 내에서만)
+  window._evData=evData;
+
+  toast('이벤트가 생성되었습니다! 링크를 복사해 팀에 공유하세요 🎉');
 }
-function generateGroups(){
-  if(!currentEventId){ showToast('이벤트를 먼저 생성하세요'); return; }
-  const ev=getEvent(currentEventId); if(!ev) return;
+
+function refreshJ(){
+  const ev=window._evData;
+  if(!ev){document.getElementById('jlist').innerHTML='<span style="font-size:13px;color:var(--t3)">이벤트를 먼저 생성하세요</span>';return;}
+  // 링크에서 최신 joined 상태 읽기
+  const linkText=document.getElementById('jlink-text').textContent;
+  const parsed=parseLinkData(linkText);
+  const cur=parsed||ev;
+  const joined=cur.joined||[];
+  const notJ=cur.members.filter(m=>!joined.includes(m));
+  document.getElementById('jlist').innerHTML=joined.length
+    ?joined.map(m=>`<span class="chip" style="background:var(--green2);border-color:var(--green);color:var(--green)">✓ ${m}</span>`).join('')
+    :'<span style="font-size:13px;color:var(--t3)">아직 참여자가 없습니다</span>';
+  document.getElementById('njlist').textContent=notJ.length?notJ.join(', '):'없음 (전원 참여!)';
+}
+
+function parseLinkData(url){
+  try{
+    const hash=url.split('#')[1]||'';
+    const qs=hash.slice(hash.indexOf('?')+1);
+    const d=new URLSearchParams(qs).get('d');
+    return d?decode(d):null;
+  }catch{return null;}
+}
+
+function genGroups(){
+  const ev=window._evData;
+  if(!ev){toast('이벤트를 먼저 생성하세요');return;}
   const pool=(ev.joined&&ev.joined.length>=2)?ev.joined:ev.members;
-  if(pool.length<2){ showToast('참여자가 2명 이상이어야 합니다'); return; }
-  ev.groups=divideGroups(shuffle(pool),ev.groupSize);
-  ev.status='done';
-  setEvent(currentEventId,ev);
+  if(pool.length<2){toast('참여자가 2명 이상이어야 합니다');return;}
+  const groups=divide(shuffle([...pool]),ev.size);
+  ev.groups=groups;
+  window._evData=ev;
+
   renderAdminGroups();
-  const resultUrl=getBase()+'#result/'+currentEventId;
-  document.getElementById('result-link-text').textContent=resultUrl;
-  document.getElementById('result-link-area').style.display='block';
-}
-function renderAdminGroups(){
-  if(!currentEventId) return;
-  const ev=getEvent(currentEventId);
-  const el=document.getElementById('admin-group-result');
-  if(!ev||!ev.groups||ev.groups.length===0){ el.innerHTML='<div class="card" style="text-align:center;color:var(--text-3);font-size:14px;padding:2rem;">그룹 생성 버튼을 눌러주세요</div>'; return; }
-  const pool=(ev.joined&&ev.joined.length>=2)?ev.joined:ev.members;
-  el.innerHTML=`<div class="stat-row"><div class="stat"><div class="stat-n">${pool.length}</div><div class="stat-l">참여 인원</div></div><div class="stat"><div class="stat-n">${ev.groups.length}</div><div class="stat-l">그룹 수</div></div><div class="stat"><div class="stat-n">${ev.groupSize}</div><div class="stat-l">그룹당 인원</div></div></div><div class="group-grid">${ev.groups.map((g,i)=>groupCardHtml(g,i)).join('')}</div>`;
+
+  const rd={...ev,groups};
+  const rUrl=base()+'#result?d='+encode(rd);
+  document.getElementById('rlink-text').textContent=rUrl;
+  document.getElementById('rlink-area').style.display='block';
 }
 
-/* ── JOIN PAGE ── */
-function initJoin(id){
-  const ev=getEvent(id);
-  if(!ev){ document.getElementById('join-event-info').innerHTML='<div class="card" style="color:var(--coral);text-align:center;padding:2rem;">유효하지 않은 링크입니다</div>'; return; }
-  const dateStr=ev.date?new Date(ev.date+'T00:00:00').toLocaleDateString('ko-KR',{month:'long',day:'numeric',weekday:'short'}):'';
-  document.getElementById('join-event-info').innerHTML=`<div class="card"><div style="font-size:18px;font-weight:700;margin-bottom:4px;">${ev.title}</div><div style="font-size:13px;color:var(--text-2);">${dateStr}</div></div>`;
-  document.getElementById('join-status-pill').innerHTML=ev.status==='open'?'<span class="status-pill status-open">● 모집 중</span>':'<span class="status-pill status-done">● 마감</span>';
-  renderJoinChips(ev);
-  updateJoinCount(ev);
+function renderAdminGroups(){
+  const ev=window._evData;
+  const el=document.getElementById('ag-result');
+  if(!ev||!ev.groups||!ev.groups.length){
+    el.innerHTML='<div class="card" style="text-align:center;color:var(--t3);font-size:14px;padding:2rem">그룹 생성 버튼을 눌러주세요</div>';return;
+  }
+  const pool=(ev.joined&&ev.joined.length>=2)?ev.joined:ev.members;
+  el.innerHTML=`<div class="srow">
+    <div class="sc"><div class="sn">${pool.length}</div><div class="sl">참여 인원</div></div>
+    <div class="sc"><div class="sn">${ev.groups.length}</div><div class="sl">그룹 수</div></div>
+    <div class="sc"><div class="sn">${ev.size}</div><div class="sl">그룹당 인원</div></div>
+  </div>
+  <div class="ggrid">${ev.groups.map((g,i)=>gcHtml(g,i)).join('')}</div>`;
 }
-function renderJoinChips(ev){
+
+// ════════════════════════════
+// 참여 신청 페이지
+// ════════════════════════════
+function initJoin(params){
+  const d=params.get('d');
+  if(!d){document.getElementById('j-info').innerHTML='<div class="card" style="color:var(--coral);text-align:center;padding:2rem">유효하지 않은 링크입니다</div>';return;}
+  const ev=decode(d);
+  if(!ev){document.getElementById('j-info').innerHTML='<div class="card" style="color:var(--coral);text-align:center;padding:2rem">링크가 만료되었거나 올바르지 않습니다</div>';return;}
+
+  window._joinEv=ev;
+  window._joinParams=params;
+
+  const dateStr=ev.date?new Date(ev.date+'T00:00:00').toLocaleDateString('ko-KR',{month:'long',day:'numeric',weekday:'short'}):'';
+  document.getElementById('j-info').innerHTML=`<div class="card"><div style="font-size:18px;font-weight:700;margin-bottom:4px">${ev.title}</div><div style="font-size:13px;color:var(--t2)">${dateStr}</div></div>`;
+  document.getElementById('j-pill').innerHTML='<span class="spill sopen">● 모집 중</span>';
+  renderJChips(ev);
+  updJCount(ev);
+}
+
+function renderJChips(ev){
   const joined=ev.joined||[];
-  document.getElementById('join-chips').innerHTML=ev.members.map(m=>{
-    const isJ=joined.includes(m);
-    return `<span class="join-chip ${isJ?'joined':''}" onclick="toggleJoin('${escQ(m)}')"><span class="j-check">✓</span><span class="j-dot"><span class="j-dot-circle"></span></span>${m}</span>`;
+  document.getElementById('j-chips').innerHTML=ev.members.map(m=>{
+    const on=joined.includes(m);
+    return `<span class="jchip ${on?'on':''}" onclick="toggleJ(${JSON.stringify(m)})">${on?'✓ ':''} ${m}</span>`;
   }).join('');
 }
-function toggleJoin(name){
-  const ev=getEvent(currentEventId);
-  if(!ev){ return; }
-  if(ev.status!=='open'){ showToast('모집이 마감되었습니다'); return; }
+
+function toggleJ(name){
+  const ev=window._joinEv;
+  if(!ev)return;
   const idx=ev.joined.indexOf(name);
-  if(idx===-1){ ev.joined.push(name); showToast(name+' 참여 신청 완료! 🎉'); }
-  else{ ev.joined.splice(idx,1); showToast(name+' 참여 취소'); }
-  setEvent(currentEventId,ev);
-  renderJoinChips(ev);
-  updateJoinCount(ev);
-}
-function updateJoinCount(ev){ document.getElementById('join-count-area').textContent=`현재 ${ev.joined.length}명 참여 신청 · 전체 ${ev.members.length}명`; }
+  if(idx===-1){ev.joined.push(name);toast(name+' 참여 신청 완료! 🎉');}
+  else{ev.joined.splice(idx,1);toast(name+' 참여 취소');}
+  window._joinEv=ev;
 
-/* ── RESULT PAGE ── */
-function initResult(id){
-  const ev=getEvent(id);
-  if(!ev||!ev.groups||ev.groups.length===0){ document.getElementById('result-groups').innerHTML='<div class="card" style="text-align:center;color:var(--text-3);font-size:14px;padding:2rem;">아직 그룹이 생성되지 않았습니다</div>'; return; }
+  // URL의 d 파라미터 업데이트 (새로고침해도 유지)
+  const newHash='join?id='+(ev.id||'')+'&d='+encode(ev);
+  history.replaceState(null,'','#'+newHash);
+
+  renderJChips(ev);
+  updJCount(ev);
+}
+
+function updJCount(ev){
+  document.getElementById('j-count').textContent=`현재 ${ev.joined.length}명 참여 신청 · 전체 ${ev.members.length}명`;
+}
+
+function copyJoinLink(){
+  navigator.clipboard.writeText(location.href).then(()=>toast('링크가 복사되었습니다!'));
+}
+
+// ════════════════════════════
+// 결과 공지 페이지
+// ════════════════════════════
+function initResult(params){
+  const d=params.get('d');
+  if(!d){document.getElementById('r-groups').innerHTML='<div class="card" style="text-align:center;color:var(--t3);font-size:14px;padding:2rem">유효하지 않은 링크입니다</div>';return;}
+  const ev=decode(d);
+  if(!ev||!ev.groups||!ev.groups.length){document.getElementById('r-groups').innerHTML='<div class="card" style="text-align:center;color:var(--t3);font-size:14px;padding:2rem">아직 그룹이 생성되지 않았습니다</div>';return;}
+
+  window._resultEv=ev;
   const dateStr=ev.date?new Date(ev.date+'T00:00:00').toLocaleDateString('ko-KR',{month:'long',day:'numeric',weekday:'short'}):'';
-  document.getElementById('result-event-title').textContent=ev.title;
-  document.getElementById('result-event-date').textContent=dateStr;
+  document.getElementById('r-title').textContent=ev.title;
+  document.getElementById('r-date').textContent=dateStr;
   const pool=ev.groups.flat();
-  document.getElementById('result-stats').innerHTML=`<div class="stat"><div class="stat-n">${pool.length}</div><div class="stat-l">참여 인원</div></div><div class="stat"><div class="stat-n">${ev.groups.length}</div><div class="stat-l">그룹 수</div></div><div class="stat"><div class="stat-n">${ev.groupSize}</div><div class="stat-l">그룹당 인원</div></div>`;
-  document.getElementById('result-groups').innerHTML=ev.groups.map((g,i)=>groupCardHtml(g,i)).join('');
-}
-function copyResultText(){
-  const ev=getEvent(currentEventId); if(!ev||!ev.groups) return;
-  const dateStr=ev.date?new Date(ev.date+'T00:00:00').toLocaleDateString('ko-KR',{month:'long',day:'numeric'}):'';
-  let text=`🍽️ ${ev.title} (${dateStr})\n\n`;
-  ev.groups.forEach((g,i)=>{ text+=`[그룹 ${i+1}] ${g.join(', ')}\n`; });
-  navigator.clipboard.writeText(text).then(()=>showToast('클립보드에 복사되었습니다!'));
+  document.getElementById('r-stats').innerHTML=`
+    <div class="sc"><div class="sn">${pool.length}</div><div class="sl">참여 인원</div></div>
+    <div class="sc"><div class="sn">${ev.groups.length}</div><div class="sl">그룹 수</div></div>
+    <div class="sc"><div class="sn">${ev.size}</div><div class="sl">그룹당 인원</div></div>`;
+  document.getElementById('r-groups').innerHTML=ev.groups.map((g,i)=>gcHtml(g,i)).join('');
 }
 
-/* ── UTILS ── */
-function copyLink(spanId,btn){
-  navigator.clipboard.writeText(document.getElementById(spanId).textContent).then(()=>{
-    btn.textContent='✓ 복사됨'; btn.classList.add('copied');
-    setTimeout(()=>{ btn.textContent='복사'; btn.classList.remove('copied'); },2000);
-  });
+function cpResultText(){
+  const ev=window._resultEv;
+  if(!ev||!ev.groups)return;
+  const dateStr=ev.date?new Date(ev.date+'T00:00:00').toLocaleDateString('ko-KR',{month:'long',day:'numeric'}):'';
+  let txt=`🍽️ ${ev.title} (${dateStr})\n\n`;
+  ev.groups.forEach((g,i)=>{txt+=`[그룹 ${i+1}] ${g.join(', ')}\n`;});
+  navigator.clipboard.writeText(txt).then(()=>toast('클립보드에 복사되었습니다!'));
 }
-function showToast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2500); }
-function escQ(s){ return s.replace(/'/g,"\\'"); }
+
+// ════════════════════════════
+// 공통 유틸
+// ════════════════════════════
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function divide(arr,size){const t=arr.length,n=Math.ceil(t/size),b=Math.floor(t/n);let r=t%n,g=[],i=0;for(let k=0;k<n;k++){const s=b+(r-->0?1:0);g.push(arr.slice(i,i+s));i+=s;}return g;}
+
+function gcHtml(group,idx){
+  return `<div class="gc"><div class="gbadge">그룹 ${idx+1}</div>${group.map(m=>{const[bg,fg]=gc(m);return`<div class="gmem"><div class="av" style="background:${bg};color:${fg}">${ini(m)}</div><div class="gname">${m}</div></div>`;}).join('')}</div>`;
+}
+
+function cpLink(spanId,btn){
+  navigator.clipboard.writeText(document.getElementById(spanId).textContent)
+    .then(()=>{btn.textContent='✓ 복사됨';btn.classList.add('ok');setTimeout(()=>{btn.textContent='복사';btn.classList.remove('ok');},2000);})
+    .catch(()=>{
+      // clipboard API 실패시 수동 선택
+      const el=document.getElementById(spanId);
+      const range=document.createRange();range.selectNode(el);
+      window.getSelection().removeAllRanges();window.getSelection().addRange(range);
+      toast('텍스트를 선택했습니다. Ctrl+C로 복사하세요');
+    });
+}
+
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
 </script>
 </body>
 </html>
