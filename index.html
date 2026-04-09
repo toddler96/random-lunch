@@ -45,10 +45,9 @@ input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(75,63,212,.1)}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
 .chip{display:inline-flex;align-items:center;gap:5px;background:var(--bg);border:1.5px solid var(--border);border-radius:99px;padding:6px 12px;font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;user-select:none}
 .chip:hover{border-color:var(--coral);background:var(--coral2);color:var(--coral)}
-.jchip{display:inline-flex;align-items:center;gap:6px;background:var(--bg);border:2px solid var(--border);border-radius:99px;padding:10px 18px;font-size:14px;font-weight:500;cursor:pointer;transition:all .2s;user-select:none}
-.jchip:hover{border-color:var(--accent);background:var(--accent2);transform:translateY(-1px)}
-.jchip.on{background:var(--green);border-color:var(--green);color:#fff}
-.jchip.on:hover{background:#157a58;border-color:#157a58}
+.jname-tag{display:inline-flex;align-items:center;gap:6px;background:var(--green2);border:1.5px solid var(--green);border-radius:99px;padding:6px 12px;font-size:13px;font-weight:500;color:var(--green)}
+.jname-tag button{background:none;border:none;cursor:pointer;color:var(--green);font-size:14px;line-height:1;padding:0;opacity:.7}
+.jname-tag button:hover{opacity:1}
 .ggrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px}
 .gc{background:var(--surface);border-radius:var(--rmd);box-shadow:var(--sh);padding:1rem 1.1rem;animation:fu .25s ease both}
 @keyframes fu{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
@@ -118,13 +117,10 @@ input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(75,63,212,.1)}
         <div><div style="font-size:12px;color:var(--t2);margin-bottom:5px">그룹당 인원 수</div><input type="number" id="ev-size" value="3" min="2" max="10" style="width:90px"></div>
       </div>
     </div>
-    <div class="card">
-      <div class="clabel">팀 멤버 등록</div>
-      <div class="irow" style="margin-bottom:10px">
-        <input type="text" id="m-input" placeholder="이름 입력 후 Enter">
-        <button class="btn bp bsm" onclick="addM()">추가</button>
+    <div class="card" style="background:var(--accent2);border:1.5px solid #c8c4f8">
+      <div style="font-size:13px;color:var(--accent3);line-height:1.6">
+        💡 팀원들이 링크를 받아 <strong>직접 이름을 입력해서 참여 신청</strong>합니다.<br>멤버 목록을 미리 등록할 필요가 없어요.
       </div>
-      <div class="chips" id="m-chips"><span style="font-size:13px;color:var(--t3)">멤버를 추가하세요</span></div>
     </div>
     <button class="btn bp bfull" onclick="createEv()">참여 신청 링크 생성 →</button>
     <div id="jlink-area" style="display:none;margin-top:1rem">
@@ -144,8 +140,7 @@ input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(75,63,212,.1)}
         <button class="btn bg bsm" onclick="refreshJ()">새로고침</button>
       </div>
       <div id="jlist" class="chips"></div>
-      <hr class="hr">
-      <div style="font-size:13px;color:var(--t2)">미참여: <span id="njlist" style="color:var(--t3)"></span></div>
+      <div id="jcount-admin" style="font-size:13px;color:var(--t2);margin-top:12px"></div>
     </div>
     <button class="btn bp bfull" onclick="aTab(2)">그룹 생성하기 →</button>
   </div>
@@ -171,13 +166,15 @@ input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(75,63,212,.1)}
   <div id="j-info"></div>
   <div class="card">
     <div class="clabel">참여 신청</div>
-    <div style="font-size:13px;color:var(--t2);margin-bottom:14px">참석하실 분은 본인 이름을 클릭해 주세요 ✋</div>
-    <div class="chips" id="j-chips"></div>
+    <div style="font-size:13px;color:var(--t2);margin-bottom:14px">이름을 입력하고 신청 버튼을 눌러주세요 ✋</div>
+    <div class="irow" style="margin-bottom:14px">
+      <input type="text" id="j-name-input" placeholder="본인 이름 입력" maxlength="20">
+      <button class="btn bp bsm" onclick="joinSubmit()">참여 신청</button>
+    </div>
+    <div id="j-chips" class="chips"></div>
   </div>
-  <div id="j-count" style="font-size:13px;color:var(--t2);text-align:center;padding:1rem 0"></div>
-  <div style="margin-top:1rem">
-    <button class="btn bg bfull" onclick="copyJoinLink()">🔗 이 참여 링크 복사해서 동료에게 공유</button>
-  </div>
+  <div id="j-count" style="font-size:13px;color:var(--t2);text-align:center;padding:.5rem 0 1rem"></div>
+  <button class="btn bg bfull" onclick="copyJoinLink()">🔗 이 링크 복사해서 동료에게 공유</button>
 </div>
 </div>
 
@@ -203,23 +200,16 @@ function gc(n){let h=0;for(let c of n)h=(h*31+c.charCodeAt(0))%AVT.length;return
 function ini(n){return n.trim().split(/\s+/).map(w=>w[0]).join('').toUpperCase().slice(0,2);}
 
 // ── 전역 상태 ──
-let members=[]; // 관리자가 등록한 전체 멤버
 let eventId=null;
 
 // ── 페이지 라우팅 ──
-// URL 구조:
-//   #admin                     → 관리자 페이지
-//   #join?id=XXX&d=...         → 참여 신청 (데이터 URL에 인코딩)
-//   #result?id=XXX&d=...       → 결과 공지
 function route(){
   const raw=location.hash.slice(1);
   const qIdx=raw.indexOf('?');
   const view=qIdx===-1?raw:raw.slice(0,qIdx);
   const qs=qIdx===-1?'':raw.slice(qIdx+1);
   const params=new URLSearchParams(qs);
-
   ['home','admin','join','result'].forEach(p=>document.getElementById('pg-'+p).classList.remove('active'));
-
   if(!view||view==='home'){show('home');}
   else if(view==='admin'){show('admin');initAdmin();}
   else if(view==='join'){show('join');initJoin(params);}
@@ -232,11 +222,10 @@ function goAdmin(){location.hash='admin';}
 window.addEventListener('hashchange',route);
 window.addEventListener('DOMContentLoaded',()=>{
   document.getElementById('ev-date').value=new Date().toISOString().slice(0,10);
-  document.getElementById('m-input').addEventListener('keydown',e=>{if(e.key==='Enter')addM();});
   route();
 });
 
-// ── 데이터 직렬화 (URL에 담기) ──
+// ── 데이터 직렬화 ──
 function encode(obj){return btoa(unescape(encodeURIComponent(JSON.stringify(obj))));}
 function decode(str){try{return JSON.parse(decodeURIComponent(escape(atob(str))));}catch{return null;}}
 function genId(){return Math.random().toString(36).slice(2,7).toUpperCase();}
@@ -246,7 +235,6 @@ function base(){return location.href.split('#')[0];}
 // 관리자 페이지
 // ════════════════════════════
 function initAdmin(){
-  renderChips();
   document.getElementById('jlink-area').style.display='none';
   document.getElementById('rlink-area').style.display='none';
   aTab(0);
@@ -261,82 +249,41 @@ function aTab(i){
   if(i===2)renderAdminGroups();
 }
 
-function addM(){
-  const inp=document.getElementById('m-input');
-  const name=inp.value.trim();
-  if(!name||members.includes(name)){inp.focus();return;}
-  members.push(name);inp.value='';inp.focus();
-  renderChips();
-}
-function removeM(name){
-  members=members.filter(m=>m!==name);
-  renderChips();
-}
-function renderChips(){
-  const el=document.getElementById('m-chips');
-  if(!members.length){el.innerHTML='<span style="font-size:13px;color:var(--t3)">멤버를 추가하세요</span>';return;}
-  el.innerHTML=members.map(m=>`<span class="chip" onclick="removeM(${JSON.stringify(m)})">${m} <span style="opacity:.5">×</span></span>`).join('');
-}
-
 function createEv(){
-  if(members.length<2){toast('멤버를 2명 이상 추가해 주세요');return;}
   const date=document.getElementById('ev-date').value;
   const titleEl=document.getElementById('ev-title').value.trim();
-  const title=titleEl||(date?date.replace(/-/g,'/')+ ' 랜덤 런치':'랜덤 런치');
+  const title=titleEl||(date?date.replace(/-/g,'/')+' 랜덤 런치':'랜덤 런치');
   const size=parseInt(document.getElementById('ev-size').value)||3;
   eventId=genId();
-
-  // 이벤트 데이터를 URL에 인코딩
-  const evData={id:eventId,title,date,size,members:[...members],joined:[]};
+  const evData={id:eventId,title,date,size,joined:[]};
   const encoded=encode(evData);
   const joinUrl=base()+'#join?id='+eventId+'&d='+encoded;
-
   document.getElementById('jlink-text').textContent=joinUrl;
   document.getElementById('jlink-area').style.display='block';
-
-  // 관리자 세션에 저장 (같은 탭 내에서만)
   window._evData=evData;
-
-  toast('이벤트가 생성되었습니다! 링크를 복사해 팀에 공유하세요 🎉');
+  toast('링크가 생성되었습니다! Teams에 공유하세요 🎉');
 }
 
 function refreshJ(){
   const ev=window._evData;
   if(!ev){document.getElementById('jlist').innerHTML='<span style="font-size:13px;color:var(--t3)">이벤트를 먼저 생성하세요</span>';return;}
-  // 링크에서 최신 joined 상태 읽기
-  const linkText=document.getElementById('jlink-text').textContent;
-  const parsed=parseLinkData(linkText);
-  const cur=parsed||ev;
-  const joined=cur.joined||[];
-  const notJ=cur.members.filter(m=>!joined.includes(m));
+  const joined=ev.joined||[];
   document.getElementById('jlist').innerHTML=joined.length
     ?joined.map(m=>`<span class="chip" style="background:var(--green2);border-color:var(--green);color:var(--green)">✓ ${m}</span>`).join('')
     :'<span style="font-size:13px;color:var(--t3)">아직 참여자가 없습니다</span>';
-  document.getElementById('njlist').textContent=notJ.length?notJ.join(', '):'없음 (전원 참여!)';
-}
-
-function parseLinkData(url){
-  try{
-    const hash=url.split('#')[1]||'';
-    const qs=hash.slice(hash.indexOf('?')+1);
-    const d=new URLSearchParams(qs).get('d');
-    return d?decode(d):null;
-  }catch{return null;}
+  document.getElementById('jcount-admin').textContent=`총 ${joined.length}명 참여 신청`;
 }
 
 function genGroups(){
   const ev=window._evData;
   if(!ev){toast('이벤트를 먼저 생성하세요');return;}
-  const pool=(ev.joined&&ev.joined.length>=2)?ev.joined:ev.members;
+  const pool=ev.joined||[];
   if(pool.length<2){toast('참여자가 2명 이상이어야 합니다');return;}
   const groups=divide(shuffle([...pool]),ev.size);
   ev.groups=groups;
   window._evData=ev;
-
   renderAdminGroups();
-
-  const rd={...ev,groups};
-  const rUrl=base()+'#result?d='+encode(rd);
+  const rUrl=base()+'#result?d='+encode({...ev,groups});
   document.getElementById('rlink-text').textContent=rUrl;
   document.getElementById('rlink-area').style.display='block';
 }
@@ -347,7 +294,7 @@ function renderAdminGroups(){
   if(!ev||!ev.groups||!ev.groups.length){
     el.innerHTML='<div class="card" style="text-align:center;color:var(--t3);font-size:14px;padding:2rem">그룹 생성 버튼을 눌러주세요</div>';return;
   }
-  const pool=(ev.joined&&ev.joined.length>=2)?ev.joined:ev.members;
+  const pool=ev.joined||[];
   el.innerHTML=`<div class="srow">
     <div class="sc"><div class="sn">${pool.length}</div><div class="sl">참여 인원</div></div>
     <div class="sc"><div class="sn">${ev.groups.length}</div><div class="sl">그룹 수</div></div>
@@ -363,44 +310,56 @@ function initJoin(params){
   const d=params.get('d');
   if(!d){document.getElementById('j-info').innerHTML='<div class="card" style="color:var(--coral);text-align:center;padding:2rem">유효하지 않은 링크입니다</div>';return;}
   const ev=decode(d);
-  if(!ev){document.getElementById('j-info').innerHTML='<div class="card" style="color:var(--coral);text-align:center;padding:2rem">링크가 만료되었거나 올바르지 않습니다</div>';return;}
-
+  if(!ev){document.getElementById('j-info').innerHTML='<div class="card" style="color:var(--coral);text-align:center;padding:2rem">링크가 올바르지 않습니다</div>';return;}
   window._joinEv=ev;
-  window._joinParams=params;
-
   const dateStr=ev.date?new Date(ev.date+'T00:00:00').toLocaleDateString('ko-KR',{month:'long',day:'numeric',weekday:'short'}):'';
   document.getElementById('j-info').innerHTML=`<div class="card"><div style="font-size:18px;font-weight:700;margin-bottom:4px">${ev.title}</div><div style="font-size:13px;color:var(--t2)">${dateStr}</div></div>`;
   document.getElementById('j-pill').innerHTML='<span class="spill sopen">● 모집 중</span>';
-  renderJChips(ev);
+  // 이름 입력 Enter 키
+  const inp=document.getElementById('j-name-input');
+  inp.addEventListener('keydown',e=>{if(e.key==='Enter')joinSubmit();});
+  renderJTags(ev);
   updJCount(ev);
 }
 
-function renderJChips(ev){
-  const joined=ev.joined||[];
-  document.getElementById('j-chips').innerHTML=ev.members.map(m=>{
-    const on=joined.includes(m);
-    return `<span class="jchip ${on?'on':''}" onclick="toggleJ(${JSON.stringify(m)})">${on?'✓ ':''} ${m}</span>`;
-  }).join('');
-}
-
-function toggleJ(name){
+function joinSubmit(){
   const ev=window._joinEv;
   if(!ev)return;
-  const idx=ev.joined.indexOf(name);
-  if(idx===-1){ev.joined.push(name);toast(name+' 참여 신청 완료! 🎉');}
-  else{ev.joined.splice(idx,1);toast(name+' 참여 취소');}
+  const inp=document.getElementById('j-name-input');
+  const name=inp.value.trim();
+  if(!name){inp.focus();return;}
+  if(ev.joined.includes(name)){toast('이미 신청된 이름입니다');inp.select();return;}
+  ev.joined.push(name);
+  inp.value='';
+  inp.focus();
   window._joinEv=ev;
-
-  // URL의 d 파라미터 업데이트 (새로고침해도 유지)
-  const newHash='join?id='+(ev.id||'')+'&d='+encode(ev);
-  history.replaceState(null,'','#'+newHash);
-
-  renderJChips(ev);
+  // URL 업데이트 (새로고침해도 유지)
+  history.replaceState(null,'','#join?id='+(ev.id||'')+'&d='+encode(ev));
+  renderJTags(ev);
   updJCount(ev);
+  toast(name+' 참여 신청 완료! 🎉');
+}
+
+function cancelJoin(name){
+  const ev=window._joinEv;
+  if(!ev)return;
+  ev.joined=ev.joined.filter(m=>m!==name);
+  window._joinEv=ev;
+  history.replaceState(null,'','#join?id='+(ev.id||'')+'&d='+encode(ev));
+  renderJTags(ev);
+  updJCount(ev);
+  toast(name+' 참여 취소');
+}
+
+function renderJTags(ev){
+  const joined=ev.joined||[];
+  document.getElementById('j-chips').innerHTML=joined.length
+    ?joined.map(m=>`<span class="jname-tag">${m}<button onclick="cancelJoin(${JSON.stringify(m)})" title="취소">×</button></span>`).join('')
+    :'<span style="font-size:13px;color:var(--t3)">아직 신청자가 없습니다</span>';
 }
 
 function updJCount(ev){
-  document.getElementById('j-count').textContent=`현재 ${ev.joined.length}명 참여 신청 · 전체 ${ev.members.length}명`;
+  document.getElementById('j-count').textContent=`현재 ${(ev.joined||[]).length}명 참여 신청`;
 }
 
 function copyJoinLink(){
